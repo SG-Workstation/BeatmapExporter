@@ -1,5 +1,6 @@
 ﻿using BeatmapExporterCLI.Data;
 using BeatmapExporterCLI.Interface;
+using BeatmapExporterCore.Localization;
 using BeatmapExporterCore.Utilities;
 
 namespace BeatmapExporterCLI
@@ -13,7 +14,7 @@ namespace BeatmapExporterCLI
             var update = await ExporterUpdater.CheckNewerVersionAvailable();
             if (update.HasValue)
             {
-                Console.WriteLine($"UPDATE AVAILABLE for BeatmapExporter: ({update.Value.Current} -> {update.Value.New})\n{ExporterUpdater.Latest}\n");
+                Console.WriteLine(LocalizationService.Instance.Format("CLI.UpdateAvailable", update.Value.Current, update.Value.New, ExporterUpdater.Latest));
             }
 
             // currently only load lazer, can add interface for selecting osu stable here later

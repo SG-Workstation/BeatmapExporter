@@ -1,4 +1,5 @@
-﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB;
+﻿using BeatmapExporterCore.Localization;
+using BeatmapExporterCore.Exporters.Lazer.LazerDB;
 using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
 using BeatmapExporterCore.Exporters.Stable.Collections;
 using BeatmapExporterCore.Filters;
@@ -163,6 +164,16 @@ namespace BeatmapExporterCore.Exporters.Lazer
         /// </summary>
         public bool TranscodeAvailable => transcoder.Available;
 
+        /// <summary>
+        /// The osu!lazer version this BeatmapExporter build targets.
+        /// </summary>
+        public string LazerVersionString => LazerDatabase.FirstLazerVersion;
+
+        /// <summary>
+        /// The osu!lazer database schema version that was loaded.
+        /// </summary>
+        public int DataSchemaVersion => LazerDatabase.LazerSchemaVersion;
+
         public record struct FilterDetail(int Id, string Description, int DiffCount);
 
         /// <summary>
@@ -243,12 +254,12 @@ namespace BeatmapExporterCore.Exporters.Lazer
         {
             if (Configuration.ExportMp3)
             {
-                return TranscodeAvailable ? "FFmpeg FOUND, audio will be transcoded to mp3. This operation will take longer if many selected beatmaps are not in .mp3 format." 
-                    : "FFmpeg runtime not found. Beatmaps that use other audio formats than .mp3 will be skipped.\nMake sure ffmpeg.exe is located on the system PATH or placed in the directory with this BeatmapExporter.exe to enable transcoding.";
+                return TranscodeAvailable ? LocalizationService.Instance["Lazer.AudioInfo.Available"] 
+                    : LocalizationService.Instance["Lazer.AudioInfo.NotAvailable"];
             }
             else
             {
-                return "All audio files will be exported in their original file format without conversion.";
+                return LocalizationService.Instance["Lazer.AudioInfo.NoConversion"];
             }
         }
         
@@ -303,7 +314,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
             using FileStream? audio = lazerDb.OpenNamedFile(mapset, metadata.AudioFile);
             if (audio is null)
             {
-                throw new IOException($"Audio file {metadata.AudioFile} not found in beatmap {mapset.ArchiveFilename()}.");
+                throw new IOException(LocalizationService.Instance.Format("Lazer.AudioNotFound", metadata.AudioFile, mapset.ArchiveFilename()));
             }
                 
             // Create physical .mp3 file, either through transcoding or simple copying
@@ -412,12 +423,12 @@ namespace BeatmapExporterCore.Exporters.Lazer
             var (mapset, metadata, outputFilename) = export;
             
             if (metadata.BackgroundFile is null) 
-                throw new InvalidOperationException($"Beatmap {mapset.ArchiveFilename()} has no background file.");
+                throw new InvalidOperationException(LocalizationService.Instance.Format("Lazer.NoBackground", mapset.ArchiveFilename()));
             
             string outputFile = Path.Combine(Configuration.ExportPath, outputFilename);
             using FileStream? background = lazerDb.OpenNamedFile(mapset, metadata.BackgroundFile);
             if (background is null)
-                throw new IOException($"Background file {metadata.BackgroundFile} not found in beatmap {mapset.ArchiveFilename()}");
+                throw new IOException(LocalizationService.Instance.Format("Lazer.BackgroundNotFound", metadata.BackgroundFile, mapset.ArchiveFilename()));
 
             using FileStream output = File.Open(outputFile, FileMode.CreateNew);
             background.CopyTo(output);
@@ -440,7 +451,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
 
             string? replayFile = score.Files.FirstOrDefault()?.File?.Hash;
             if (replayFile == null)
-                throw new IOException($"Replay file for {outputFile} does not exist.");
+                throw new IOException(LocalizationService.Instance.Format("Lazer.ReplayNotFound", outputFile));
 
             using FileStream replay = lazerDb.OpenHashedFile(replayFile);
             using FileStream output = File.Open(outputFile, FileMode.CreateNew);
@@ -460,7 +471,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
             {
                 filename = skin.OutputFilename();
                 if (skin.Protected || skin.NamedFiles.Count == 0)
-                    throw new IOException("This skin can not be exported");
+                    throw new IOException(LocalizationService.Instance["Lazer.SkinNotExportable"]);
                 string exportPath = Path.Combine(Configuration.ExportPath, filename);
                 export = File.Open(exportPath, FileMode.CreateNew);
 

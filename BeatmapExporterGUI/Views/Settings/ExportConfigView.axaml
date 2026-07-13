@@ -19,7 +19,8 @@
                   Spacing="24">
 
         <TextBlock FontSize="24"
-                   HorizontalAlignment="Center">Beatmap Selection/Filters</TextBlock>
+                   HorizontalAlignment="Center"
+                   Text="{Binding Loc[Config.Filters]}" />
 
         <Grid RowDefinitions="*,*">
 
@@ -39,23 +40,24 @@
                             Spacing="6">
                   <PathIcon Data="{StaticResource add_square_regular}"
                             VerticalAlignment="Center" />
-                  <TextBlock VerticalAlignment="Center">Add New Filter</TextBlock>
+                  <TextBlock VerticalAlignment="Center"
+                             Text="{Binding Loc[Config.AddFilter]}" />
                 </StackPanel>
               </Button>
               
               <Button Command="{Binding RemoveSelectedFilterCommand}"
                       Margin="5">
-                Remove Selected Filter
+                <TextBlock Text="{Binding Loc[Config.RemoveFilter]}" />
               </Button>
               
               <Button Command="{Binding ResetFiltersCommand}"
                       Margin="5">
-                Reset Filters
+                <TextBlock Text="{Binding Loc[Config.ResetFilters]}" />
               </Button>
 
               <Button Command="{Binding ListBeatmapsCommand}"
                       Margin="5">
-                View Beatmap List
+                <TextBlock Text="{Binding Loc[Config.ViewBeatmapList]}" />
               </Button>
               
             </WrapPanel>
@@ -64,7 +66,8 @@
                         Spacing="12"
                         IsVisible="{Binding ShouldDisplayFilterMode}">
 
-              <TextBlock VerticalAlignment="Center">Maps must match ALL filters:</TextBlock>
+              <TextBlock VerticalAlignment="Center"
+                         Text="{Binding Loc[Config.MatchAll]}" />
               <CheckBox IsChecked="{Binding CombineFilterMode}" />
 
             </StackPanel>
@@ -93,14 +96,16 @@
                 Spacing="24">
 
       <TextBlock FontSize="24"
-                 HorizontalAlignment="Center">General Export Settings</TextBlock>
+                 HorizontalAlignment="Center"
+                 Text="{Binding Loc[Config.GeneralSettings]}" />
 
       <!-- Export Mode setting -->
       <StackPanel Spacing="6">
         
         <StackPanel Orientation="Horizontal"
                     Spacing="12">
-          <TextBlock VerticalAlignment="Center">Export Mode</TextBlock>
+          <TextBlock VerticalAlignment="Center"
+                     Text="{Binding Loc[Config.ExportMode]}" />
           <ComboBox ItemsSource="{Binding ExportModes}"
                     SelectedIndex="{Binding SelectedExportIndex}" />
         </StackPanel>
@@ -111,18 +116,18 @@
       <!-- Export Path setting -->
       <StackPanel Spacing="6">
 
-        <TextBlock>Export Path</TextBlock>
+        <TextBlock Text="{Binding Loc[Config.ExportPath]}" />
         <TextBlock Text="{Binding ExportPath}"
                    TextWrapping="Wrap" />
         
         <StackPanel Orientation="Horizontal"
                     Spacing="5">
           <Button Command="{Binding SelectExportPath}">
-            Change Export Location
+            <TextBlock Text="{Binding Loc[Config.ChangeLocation]}" />
           </Button>
           <Button Command="{Binding OpenExportDirectory}"
                   Classes.accent="{Binding ShouldDisplayMergeOptions}">
-            Open Export Directory
+            <TextBlock Text="{Binding Loc[Config.OpenDirectory]}" />
           </Button>
         </StackPanel>
 
@@ -135,7 +140,8 @@
         <StackPanel Orientation="Horizontal"
                     Spacing="12">
 
-          <TextBlock VerticalAlignment="Center">.osz/.osk compression</TextBlock>
+          <TextBlock VerticalAlignment="Center"
+                     Text="{Binding Loc[Config.Compression]}" />
           <CheckBox IsChecked="{Binding CompressionEnabled}" />
         
         </StackPanel>
@@ -143,6 +149,19 @@
       
       </StackPanel>
       
+      <!-- Language Selection -->
+      <StackPanel Spacing="6">
+
+        <StackPanel Orientation="Horizontal"
+                    Spacing="12">
+          <TextBlock VerticalAlignment="Center"
+                     Text="{Binding Loc[Config.Language]}" />
+          <ComboBox ItemsSource="{Binding AvailableLanguages}"
+                    SelectedIndex="{Binding SelectedLanguageIndex}" />
+        </StackPanel>
+
+      </StackPanel>
+
       <!-- Audio export file format setting -->
       <StackPanel Spacing="6"
                   IsVisible="{Binding IsAudioExport}">
@@ -150,7 +169,8 @@
         <StackPanel Orientation="Horizontal"
                     Spacing="12">
           
-          <TextBlock VerticalAlignment="Center">Export .mp3 files only</TextBlock>
+          <TextBlock VerticalAlignment="Center"
+                     Text="{Binding Loc[Config.ExportMp3]}" />
           <CheckBox IsChecked="{Binding Mp3ExportEnabled}" />
           
         </StackPanel>
@@ -165,7 +185,8 @@
         <StackPanel Orientation="Horizontal"
                     Spacing="12">
 
-          <TextBlock VerticalAlignment="Center">Merge Existing collection.db</TextBlock>
+          <TextBlock VerticalAlignment="Center"
+                     Text="{Binding Loc[Config.MergeCollections]}" />
           <CheckBox IsChecked="{Binding MergeCollectionsEnabled}" />
           
         </StackPanel>
@@ -180,7 +201,8 @@
         <StackPanel Orientation="Horizontal"
                     Spacing="12">
 
-          <TextBlock VerticalAlignment="Center">Case-Insensitive Merge</TextBlock>
+          <TextBlock VerticalAlignment="Center"
+                     Text="{Binding Loc[Config.CaseInsensitive]}" />
           <CheckBox IsChecked="{Binding MergeCaseInsensitive}" />
 
         </StackPanel>
@@ -191,7 +213,7 @@
       <Button Command="{Binding ExportBeatmapsCommand}"
               Classes="accent"
               FontSize="18"
-              Content="{Binding ExportUnit, StringFormat=Export selection as {0}}">
+              Content="{Binding ExportUnitInfo}">
       </Button>
       
     </StackPanel>

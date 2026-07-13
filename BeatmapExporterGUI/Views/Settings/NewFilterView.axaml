@@ -10,13 +10,13 @@
   <StackPanel Spacing="18">
 
     <TextBlock FontSize="24"
-               HorizontalAlignment="Center">
-      Create New Beatmap Filter
-    </TextBlock>
+               HorizontalAlignment="Center"
+               Text="{Binding Loc[Filter.NewTitle]}" />
 
     <StackPanel Orientation="Horizontal"
                 Spacing="6">
-      <TextBlock VerticalAlignment="Center">Beatmap Filter Type</TextBlock>
+      <TextBlock VerticalAlignment="Center"
+                 Text="{Binding Loc[Filter.Type]}" />
       <ComboBox VerticalAlignment="Center" 
                 ItemsSource="{Binding AvailableFilterTypes}"
                 SelectedIndex="{Binding SelectedFilterIndex}" />
@@ -33,15 +33,20 @@
                     Width="400"
                     HorizontalAlignment="Left" />
 
-    <CheckBox IsChecked="{Binding Negate}">Invert/Negate Filter</CheckBox>
+    <CheckBox IsChecked="{Binding Negate}"
+              Content="{Binding Loc[Filter.Invert]}" />
 
     <StackPanel Orientation="Horizontal"
                 Spacing="12">
 
       <Button Classes="accent"
-              Command="{Binding SaveFilterCommand}">Apply Filter</Button>
+              Command="{Binding SaveFilterCommand}">
+        <TextBlock Text="{Binding Loc[Filter.Apply]}" />
+      </Button>
       
-      <Button Command="{Binding CancelCreation}">Cancel</Button>
+      <Button Command="{Binding CancelCreation}">
+        <TextBlock Text="{Binding Loc[Filter.Cancel]}" />
+      </Button>
       
     </StackPanel>
     

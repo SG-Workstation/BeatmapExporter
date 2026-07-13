@@ -1,6 +1,7 @@
 ﻿using BeatmapExporterCore.Exporters;
 using BeatmapExporterCore.Exporters.Lazer;
 using BeatmapExporterCore.Filters;
+using BeatmapExporterCore.Localization;
 using System.Text;
 
 namespace BeatmapExporterCLI.Interface
@@ -27,7 +28,7 @@ namespace BeatmapExporterCLI.Interface
             Exporter.SetupExport();
             int attempted = 0, exported = 0;
             int count = Exporter.SelectedBeatmapSetCount;
-            Console.WriteLine($"Selected {Exporter.SelectedBeatmapSetCount} beatmap sets for export.");
+            Console.WriteLine(LocalizationService.Instance.Format("CLI.ExportSelectedSets", Exporter.SelectedBeatmapSetCount));
             foreach (var mapset in Exporter.SelectedBeatmapSets)
             {
                 string? filename = null;
@@ -45,20 +46,20 @@ namespace BeatmapExporterCLI.Interface
                         Exporter.ExportBeatmap(mapset, out filename);
                     }
                     exported++;
-                    Console.WriteLine($"Exported beatmap set ({attempted}/{count}): {filename}");
+                    Console.WriteLine(LocalizationService.Instance.Format("Export.Progress", attempted, count, filename));
                 } catch (Exception e)
                 {
-                    Console.WriteLine($"Unable to export {filename} :: {e.Message}");
+                    Console.WriteLine(LocalizationService.Instance.Format("Export.Error", filename ?? "?", e.Message));
                     Logger.Error(e);
                 }
             };
-            Console.WriteLine($"Exported {exported}/{count} beatmaps to {Configuration.FullPath}.");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.Complete", exported, count, Configuration.FullPath));
         }
 
         public void ExportAudioFiles()
         {
             Exporter.SetupExport();
-            Console.WriteLine($"Exporting audio from {Exporter.SelectedBeatmapSetCount} beatmap sets as audio files.");
+            Console.WriteLine(LocalizationService.Instance.Format("CLI.ExportAudioIntro", Exporter.SelectedBeatmapSetCount));
             Console.WriteLine(Exporter.AudioTranscodeInfo());
 
             int attempted = 0, exportedAudio = 0;
@@ -71,38 +72,38 @@ namespace BeatmapExporterCLI.Interface
                     attempted++;
                     string audioFile = audioExport.AudioFile.AudioFile;
                     var transcode = audioExport.TranscodeFrom != null;
-                    var transcodeNotice = transcode ? $"(transcode required from {audioExport.TranscodeFrom})" : "";
+                    var transcodeNotice = transcode ? LocalizationService.Instance.Format("CLI.TranscodeNotice", audioExport.TranscodeFrom) : "";
                     try
                     {
-                        Console.WriteLine($"({attempted}/?) Exporting {audioExport.OutputFilename}{transcodeNotice}");
+                        Console.WriteLine(LocalizationService.Instance.Format("Export.AudioProgress", attempted, audioExport.OutputFilename, transcodeNotice));
                         if (transcode && !Exporter.TranscodeAvailable)
                         {
-                            Console.WriteLine($"Beatmap has non-mp3 audio: {audioFile}. FFmpeg not loaded, skipping.");
+                            Console.WriteLine(LocalizationService.Instance.Format("Export.AudioSkip", audioFile));
                             continue;
                         }
 
-                        void metadataFailure(Exception e) => Console.WriteLine($"Unable to set metadata for {audioExport.OutputFilename} :: {e.Message}\nExporting will continue.");
+                        void metadataFailure(Exception e) => Console.WriteLine(LocalizationService.Instance.Format("Export.AudioMetaError", audioExport.OutputFilename, e.Message));
                         Exporter.ExportAudio(audioExport, metadataFailure);
                         exportedAudio++;
 
                     } catch (TranscodeException te)
                     {
-                        Console.WriteLine($"Unable to transcode audio: {audioFile}. An error occured :: {te.Message}");
+                        Console.WriteLine(LocalizationService.Instance.Format("Export.AudioTranscodeError", audioFile, te.Message));
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Unable to export audio: {audioFile} :: {e.Message}");
+                        Console.WriteLine(LocalizationService.Instance.Format("Export.AudioFileError", audioFile, e.Message));
                         Logger.Error(e);
                     }
                 }
             }
-            Console.WriteLine($"Exported {exportedAudio}/{attempted} audio files from {Exporter.SelectedBeatmapCount} beatmaps to {Configuration.FullPath}.");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.AudioComplete", exportedAudio, attempted, Exporter.SelectedBeatmapCount, Configuration.FullPath));
         }
 
         public void ExportBackgroundFiles()
         {
             Exporter.SetupExport();
-            Console.WriteLine($"Exporting beatmap background images from {Exporter.SelectedBeatmapSetCount}.");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.BackgroundIntro", Exporter.SelectedBeatmapSetCount));
 
             int attempted = 0, exported = 0;
             foreach (var mapset in Exporter.SelectedBeatmapSets)
@@ -116,18 +117,18 @@ namespace BeatmapExporterCLI.Interface
 
                     try
                     {
-                        Console.WriteLine($"({attempted}/?) Exporting {imageExport.OutputFilename}");
+                        Console.WriteLine(LocalizationService.Instance.Format("Export.BackgroundProgress", attempted, imageExport.OutputFilename));
                         Exporter.ExportBackground(imageExport);
                         exported++;
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Unable to export background image {backgroundFile} :: {e.Message}");
+                        Console.WriteLine(LocalizationService.Instance.Format("Export.BackgroundError", backgroundFile, e.Message));
                         Logger.Error(e);
                     }
                 }
             }
-            Console.WriteLine($"Exported {exported}/{attempted} background files from {Exporter.SelectedBeatmapCount} beatmaps to {Configuration.FullPath}.");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.BackgroundComplete", exported, attempted, Exporter.SelectedBeatmapCount, Configuration.FullPath));
         }
         
         public void ExportReplays()
@@ -138,7 +139,7 @@ namespace BeatmapExporterCLI.Interface
             var selectedReplays = Exporter.GetSelectedReplays();
             var replayCount = selectedReplays.Count();
 
-            Console.WriteLine($"Exporting {replayCount} replays from {Exporter.SelectedBeatmapCount} selected beatmaps.");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.ReplayIntro", replayCount, Exporter.SelectedBeatmapCount));
             foreach (var replay in selectedReplays)
             {
                 string? filename = null;
@@ -146,14 +147,14 @@ namespace BeatmapExporterCLI.Interface
                 {
                     Exporter.ExportReplay(replay, out filename);
                     exported++;
-                    Console.WriteLine($"Exported replay ({exported}/{replayCount}): {filename}");
+                    Console.WriteLine(LocalizationService.Instance.Format("Export.ReplayProgress", exported, replayCount, filename));
                 } catch (Exception e)
                 {
-                    Console.WriteLine($"Unable to export score replay {filename} :: {e.Message}");
+                    Console.WriteLine(LocalizationService.Instance.Format("Export.ReplayError", filename ?? "?", e.Message));
                     Logger.Error(e);
                 }
             }
-            Console.WriteLine($"Exported {exported}/{replayCount} score replays from {Exporter.SelectedBeatmapCount} beatmaps to {Configuration.FullPath}");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.ReplayComplete", exported, replayCount, Exporter.SelectedBeatmapCount, Configuration.FullPath));
         }
 
         public void ExportSkins()
@@ -163,7 +164,7 @@ namespace BeatmapExporterCLI.Interface
             var skins = Exporter.Skins;
             var skinCount = skins.Count;
             
-            Console.WriteLine($"Exporting {skinCount} skins.");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.SkinIntro", skinCount));
             foreach (var skin in skins)
             {
                 string? filename = null;
@@ -171,15 +172,15 @@ namespace BeatmapExporterCLI.Interface
                 {
                     Exporter.ExportSkin(skin, out filename);
                     exported++;
-                    Console.WriteLine($"Exported skin ({exported}/{skinCount}): {filename}).");
+                    Console.WriteLine(LocalizationService.Instance.Format("Export.SkinProgress", exported, skinCount, filename));
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Unable to export skin {filename} :: {e.Message}");
+                    Console.WriteLine(LocalizationService.Instance.Format("Export.SkinError", filename ?? "?", e.Message));
                     Logger.Error(e);
                 }
             }
-            Console.WriteLine($"Exported {exported}/{skinCount} skins to {Configuration.FullPath}.");
+            Console.WriteLine(LocalizationService.Instance.Format("Export.SkinComplete", exported, skinCount, Configuration.FullPath));
         }
 
         public void ExportCollectionDb()
@@ -190,12 +191,12 @@ namespace BeatmapExporterCLI.Interface
                 var steps = Exporter.ExportCollectionDb();
                 foreach (var step in steps)
                 {
-                    Console.WriteLine($"Adding \"{step.Name}\" to collectionl.db with {step.IncludedDiffs}/{step.OriginalDiffs} included after applying filters.");
+                    Console.WriteLine(LocalizationService.Instance.Format("Export.CollectionDbProgress", step.Name, step.IncludedDiffs, step.OriginalDiffs));
                 }
-                Console.WriteLine($"Exported collection.db file with {steps.Count} collections included.");
+                Console.WriteLine(LocalizationService.Instance.Format("Export.CollectionDbComplete", steps.Count));
             } catch (Exception e)
             {
-                Console.WriteLine($"Unable to export collection.db file :: {e.Message}");
+                Console.WriteLine(LocalizationService.Instance.Format("Export.CollectionDbError", e.Message));
                 Logger.Error(e);
                 return;
             }
@@ -211,12 +212,12 @@ namespace BeatmapExporterCLI.Interface
 
         public void DisplayCollections()
         {
-            Console.Write("osu! collections:\n\n");
+            Console.Write($"{LocalizationService.Instance["CLI.CollectionsHeader"]}\n\n");
             foreach (var (name, (index, maps)) in Exporter.Collections)
             {
-                Console.WriteLine($"#{index}: {name} ({maps.Count} beatmaps)");
+                Console.WriteLine(LocalizationService.Instance.Format("CLI.CollectionItem", index, name, maps.Count));
             }
-            Console.Write("\nThe collection names as shown here can be used with the \"collection\" beatmap filter.\n");
+            Console.Write($"\n{LocalizationService.Instance["CLI.CollectionFilterHint"]}\n");
         }
 
         public void StartExportConfigurator()
@@ -225,62 +226,62 @@ namespace BeatmapExporterCLI.Interface
             {
                 StringBuilder settings = new();
                 settings
-                    .Append("\n--- Advanced export settings ---\n* indicates a setting that has been changed.\n")
-                    .Append("\n1. ");
+                    .Append(LocalizationService.Instance["CLI.AdvancedSettings"])
+                    .Append(LocalizationService.Instance["CLI.SettingNum1"]);
 
                 var exportBeatmaps = Configuration.ExportFormat == ExportFormat.Beatmap;
                 var formatId = (int)Configuration.ExportFormat + 1;
                 var edited = exportBeatmaps ? "" : "*";
 
                 settings
-                    .Append($"Type {formatId}: {Configuration.ExportFormat.Descriptor()}{edited}")
-                    .Append("\n2. Export path: ")
+                    .Append(LocalizationService.Instance.Format("CLI.SettingExportFormat", formatId, Configuration.ExportFormat.Descriptor(), edited))
+                    .Append(LocalizationService.Instance["CLI.SettingExportPathPrefix"])
                     .Append(Path.GetFullPath(Configuration.ExportPath));
                 if (Configuration.ExportPath != Configuration.DefaultExportPath)
                     settings.Append('*');
 
                 if (Configuration.CompressionAvailable)
                 {
-                    settings.Append("\n3. ");
+                    settings.Append(LocalizationService.Instance["CLI.SettingNum3"]);
                     if (Configuration.CompressionEnabled)
-                        settings.Append(".osz/.osk compression is enabled (slow export, smaller file sizes)*");
+                        settings.Append(LocalizationService.Instance["CLI.CompressionEnabled"]);
                     else
-                        settings.Append(".osz/.osk compression is disabled (fastest export)");
+                        settings.Append(LocalizationService.Instance["CLI.CompressionDisabled"]);
                 }
 
                 var exportCollectionDb = Configuration.ExportFormat == ExportFormat.CollectionDb;
                 if (exportCollectionDb)
                 {
-                    settings.Append("\n3. ");
+                    settings.Append(LocalizationService.Instance["CLI.SettingNum3"]);
                     if (Configuration.MergeCollections)
-                        settings.Append("collection.db merging is enabled (merges collections into an existing collection.db at the export location)");
+                        settings.Append(LocalizationService.Instance["CLI.MergeEnabled"]);
                     else
-                        settings.Append("collection.db merging is disabled (does not merge, always fully overwrites any collection.db at export location)*");
+                        settings.Append(LocalizationService.Instance["CLI.MergeDisabled"]);
 
-                    settings.Append("\n4. ");
+                    settings.Append(LocalizationService.Instance["CLI.SettingNum4"]);
                     if (Configuration.MergeCaseInsensitive)
-                        settings.Append("collection.db merging is case-insensitive (collections with the same name with different capitalization are merged)");
+                        settings.Append(LocalizationService.Instance["CLI.MergeCaseInsensitive"]);
                     else
-                        settings.Append("collection.db merging is case-sensitive (all collections are preserved)*");
+                        settings.Append(LocalizationService.Instance["CLI.MergeCaseSensitive"]);
                 }
 
                 var exportAudio = Configuration.ExportFormat == ExportFormat.Audio;
                 if (exportAudio)
                 {
-                    settings.Append("\n3. ");
+                    settings.Append(LocalizationService.Instance["CLI.SettingNum3"]);
                     if (Configuration.ExportMp3)
-                        settings.Append("audio files will be exported as .mp3 ONLY. If FFmpeg is available, other formats will be transcoded. If not, other formats will be skipped");
+                        settings.Append(LocalizationService.Instance["CLI.AudioMp3Only"]);
                     else 
-                        settings.Append("audio files will be exported in their original file format*");
+                        settings.Append(LocalizationService.Instance["CLI.AudioOriginal"]);
                 }
 
-                settings.Append("\n\nEdit setting # (Blank to save settings): ");
+                settings.Append(LocalizationService.Instance["CLI.EditSettingPrompt"]);
 
                 Console.Write(settings.ToString());
                 string? input = Console.ReadLine();
                 if (string.IsNullOrEmpty(input) || !int.TryParse(input, out int op) || op < 1 || op > (exportBeatmaps || exportCollectionDb || exportAudio ? 4 : 2))
                 {
-                    Console.Write("\nInvalid operation selected.\n");
+                    Console.Write(LocalizationService.Instance["CLI.InvalidOperationFull"]);
                     return;
                 }
 
@@ -290,35 +291,35 @@ namespace BeatmapExporterCLI.Interface
                         Configuration.ExportFormat = Configuration.ExportFormat.Next();
                         break;
                     case 2:
-                        Console.Write($"\nPath selected must be valid for your platform or export will fail! Be careful of invalid filename characters on Windows.\nAudio exports will automatically export to an 'mp3' folder at this location.\nDefault export path: {Configuration.DefaultExportPath}\nCurrent export path: {Configuration.ExportPath}\nNew export path: ");
+                        Console.Write(LocalizationService.Instance.Format("CLI.ChangePathPrompt", Configuration.DefaultExportPath, Configuration.ExportPath));
                         string? pathInput = Console.ReadLine();
                         if (string.IsNullOrEmpty(pathInput))
                             continue;
                         Configuration.ExportPath = pathInput;
-                        Console.WriteLine($"- CHANGED: Export location set to {Path.GetFullPath(Configuration.ExportPath)}");
+                        Console.WriteLine(LocalizationService.Instance.Format("CLI.ChangedExportPath", Path.GetFullPath(Configuration.ExportPath)));
                         break;
                     case 3:
                         if (Configuration.CompressionAvailable)
                         {
                             if (Configuration.CompressionEnabled)
                             {
-                                Console.WriteLine("- CHANGED: .osz output compression has been disabled.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.CompressionDisabledMsg"]);
                                 Configuration.CompressionEnabled = false;
                             }
                             else
                             {
-                                Console.WriteLine("- CHANGED: .osz output compression has been enabled.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.CompressionEnabledMsg"]);
                                 Configuration.CompressionEnabled = true;
                             }
                         } else if (exportCollectionDb)
                         {
                             if (Configuration.MergeCollections)
                             {
-                                Console.WriteLine("- CHANGED: collection.db merging has been disabled.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.MergeDisabledMsg"]);
                                 Configuration.MergeCollections = false;
                             } else
                             {
-                                Console.WriteLine("- CHANGED: collection.db merging has been enabled.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.MergeEnabledMsg"]);
                                 Configuration.MergeCollections = true;
                             }
                         }
@@ -326,12 +327,12 @@ namespace BeatmapExporterCLI.Interface
                         {
                             if (Configuration.ExportMp3)
                             {
-                                Console.WriteLine("- CHANGED: all audio files will be exported as-is.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.AudioAsIsMsg"]);
                                 Configuration.ExportMp3 = false;
                             }
                             else
                             {
-                                Console.WriteLine("- CHANGED: audio files will export as .mp3 ONLY.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.AudioMp3OnlyMsg"]);
                                 Configuration.ExportMp3 = true;
                             }
                         }
@@ -341,12 +342,12 @@ namespace BeatmapExporterCLI.Interface
                         {
                             if (Configuration.MergeCaseInsensitive)
                             {
-                                Console.WriteLine("- CHANGED: collection merging is now case-sensitive.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.MergeCaseSensitiveMsg"]);
                                 Configuration.MergeCaseInsensitive = false;
                             }
                             else
                             {
-                                Console.WriteLine("- CHANGED: collection merging is now case-insensitive.");
+                                Console.WriteLine(LocalizationService.Instance["CLI.MergeCaseInsensitiveMsg"]);
                                 Configuration.MergeCaseInsensitive = true;
                             }
                         }
@@ -358,53 +359,26 @@ namespace BeatmapExporterCLI.Interface
         #region Beatmap Filters
         public void BeatmapFilterSelection()
         {
-            Console.Write("\n--- Beatmap Selection ---\n");
+            Console.Write(LocalizationService.Instance["CLI.BeatmapFilterHeader"]);
 
-            Console.Write(
-    @"Only beatmaps which match ALL ACTIVE FILTERS will be exported.
-Prefixing the filter with ""!"" will negate the filter, if you want to use a ""less than"" filter. ""!"" can be used with all filters, though an example is only shown for star rating.
-
-Examples:
-- To only export beatmaps 6.3 stars and above: stars 6.3
-- Below 6.3 stars (negation example, works for all filters): !stars 6.3
-- Longer than 1:30 (90 seconds): length 90
-- 180BPM and above: bpm 180
-- Beatmaps added in the last 7 days: since 7
-- Beatmaps added in the last 5 hours: since 5:00
-- Beatmaps ranked in the last 30 days: ranked 30
-- Specific beatmap ID (comma-separated): id 1
-- Mapped by RLC or Nathan (comma-separated): author RLC, Nathan
-- Specific artists (comma-separated): artist Camellia, nanahira
-- Tags include ""touhou"": tag touhou
-- Specific gamemodes: mode osu/mania/ctb/taiko
-- Beatmap status: status graveyard/leaderboard/ranked/approved/qualified/loved
-- Beatmap played in the last 30 days: played 30
-- Beatmap has ever been played: everplayed yes
-- Beatmap has ever been played (include all diffs in set): everplayed set
-- Contained in a specific collection called ""songs"": collection songs
-- Contained in a specific collection labeled #1 in the collection list: collection #1
-- Remove a specific filter (using line number from list above): remove 1
-- Remove all filters: reset
-Back to export menu: exit
-"
-);
+            Console.Write(LocalizationService.Instance["CLI.FilterHelpText"]);
 
             while (true)
             {
                 var filters = Configuration.Filters;
                 if (filters.Count > 0)
                 {
-                    Console.Write("----------------------\nCurrent beatmap filters:\n\n");
+                    Console.Write(LocalizationService.Instance["CLI.FilterSection"]);
                     Console.Write(FilterDetail());
-                    Console.Write($"\nMatched beatmap sets: {Exporter.SelectedBeatmapSetCount}/{Exporter.TotalBeatmapSetCount}\n\n");
+                    Console.Write(LocalizationService.Instance.Format("CLI.MatchedSets", Exporter.SelectedBeatmapSetCount, Exporter.TotalBeatmapSetCount));
                 }
                 else
                 {
-                    Console.Write("\n\nThere are no active beatmap filters. ALL beatmaps currently selected for export.\n\n");
+                    Console.Write(LocalizationService.Instance["CLI.NoActiveFilters"]);
                 }
 
                 // start filter selection ui mode
-                Console.Write("Select filter (Blank to save selection): ");
+                Console.Write(LocalizationService.Instance["CLI.SelectFilterPrompt"]);
 
                 string? input = Console.ReadLine()?.ToLower();
                 if (string.IsNullOrEmpty(input))
@@ -433,19 +407,19 @@ Back to export menu: exit
                             filter = new FilterParser(input).Parse();
                         } catch (ArgumentException ae)
                         {
-                            Console.WriteLine($"Filter input error: {ae.Message}");
+                            Console.WriteLine(LocalizationService.Instance.Format("CLI.FilterInputError", ae.Message));
                             break;
                         }
                         if (filter is not null)
                         {
                             filters.Add(filter);
-                            static void collectionFailure(string filter) => Console.WriteLine($"Unable to find collection: {filter}.");
+                            static void collectionFailure(string filter) => Console.WriteLine(LocalizationService.Instance.Format("CLI.CollectionNotFound", filter));
                             Exporter.UpdateSelectedBeatmaps(collectionFailure);
-                            Console.Write("\nFilter added.\n\n");
+                            Console.Write(LocalizationService.Instance["CLI.FilterAdded"]);
                         }
                         else
                         {
-                            Console.WriteLine($"Invalid filter '{command[0]}'.");
+                            Console.WriteLine(LocalizationService.Instance.Format("CLI.InvalidFilter", command[0]));
                         }
                         break;
                 }
@@ -454,7 +428,7 @@ Back to export menu: exit
 
         public string FilterDetail()
         {
-            var filterInfo = Exporter.Filters().Select(filter => $"{filter.Id}. {filter.Description} ({filter.DiffCount} beatmaps)");
+            var filterInfo = Exporter.Filters().Select(filter => LocalizationService.Instance.Format("CLI.FilterDetailItem", filter.Id, filter.Description, filter.DiffCount));
             return string.Join("\n", filterInfo);
         }
 
@@ -463,12 +437,12 @@ Back to export menu: exit
             var filters = Configuration.Filters;
             if (idArg is null || !int.TryParse(idArg, out int id) || id < 1 || id > filters.Count)
             {
-                Console.WriteLine($"Not an existing rule ID: {idArg}");
+                Console.WriteLine(LocalizationService.Instance.Format("CLI.InvalidRuleId", idArg ?? "?"));
                 return;
             }
 
             filters.RemoveAt(id - 1);
-            Console.WriteLine("Filter removed.");
+            Console.WriteLine(LocalizationService.Instance["CLI.FilterRemoved"]);
             Exporter.UpdateSelectedBeatmaps();
             return;
         }

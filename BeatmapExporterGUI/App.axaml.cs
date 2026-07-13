@@ -2,6 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using BeatmapExporterCore.Localization;
 using BeatmapExporterGUI.Exporter;
 using BeatmapExporterGUI.Utilities;
 using BeatmapExporterGUI.ViewModels;

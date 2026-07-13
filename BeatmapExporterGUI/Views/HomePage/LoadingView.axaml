@@ -8,9 +8,8 @@
              x:DataType="vm:LoadingViewModel">
 
   <Panel HorizontalAlignment="Center">
-    <TextBlock FontSize="24">
-      osu!lazer database loading...
-    </TextBlock>
+    <TextBlock FontSize="24"
+               Text="{Binding Loc[Home.Loading]}" />
   </Panel>
   
 </UserControl>

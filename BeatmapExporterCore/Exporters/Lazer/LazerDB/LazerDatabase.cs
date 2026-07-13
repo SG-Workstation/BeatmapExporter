@@ -1,4 +1,5 @@
-﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
+﻿using BeatmapExporterCore.Localization;
+using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
 using Realms;
 using Realms.Exceptions;
 using System.Runtime.InteropServices;
@@ -131,7 +132,7 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB
                 return File.Open(path, FileMode.Open);
             } catch(Exception e)
             {
-                throw new IOException($"Unable to open file: {hash} :: {e.Message}", e);
+                throw new IOException(LocalizationService.Instance.Format("Lazer.FileOpenError", hash, e.Message), e);
             }
         }
 
@@ -155,7 +156,7 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB
                 return File.Open(path, FileMode.Open); // Throws IOException
             } catch(Exception e)
             {
-                throw new IOException($"Unable to open file: {filename} from beatmap {set.ArchiveFilename()}", e);
+                throw new IOException(LocalizationService.Instance.Format("Lazer.FileOpenErrorBeatmap", filename, set.ArchiveFilename()), e);
             }
         }
     }

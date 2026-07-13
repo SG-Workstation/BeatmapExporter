@@ -1,6 +1,7 @@
 ﻿using Avalonia.Data;
 using BeatmapExporterCore.Exporters;
 using BeatmapExporterCore.Filters;
+using BeatmapExporterCore.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -65,17 +66,28 @@ namespace BeatmapExporterGUI.ViewModels.Settings
             FilterTemplate.Input.RawText => new TextSelectorViewModel(this),
             FilterTemplate.Input.Played => new DropdownSelectorViewModel(this, new()
             {
-                "yes", "yes, with all diffs", "no"
+                new SelectOption(LocalizationService.Instance["Filter.OptionYes"], "yes"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionYesAllDiffs"], "yes, with all diffs"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionNo"], "no")
             }),
             FilterTemplate.Input.Gamemode => new DropdownSelectorViewModel(this, new()
             {
-                "osu", "mania", "ctb", "taiko"
+                new SelectOption(LocalizationService.Instance["Filter.OptionOsu"], "osu"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionMania"], "mania"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionCtb"], "ctb"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionTaiko"], "taiko")
             }),
             FilterTemplate.Input.Status => new DropdownSelectorViewModel(this, new()
             {
-                "graveyard", "leaderboard", "ranked", "approved", "qualified", "loved"
+                new SelectOption(LocalizationService.Instance["Filter.OptionGraveyard"], "graveyard"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionLeaderboard"], "leaderboard"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionRanked"], "ranked"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionApproved"], "approved"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionQualified"], "qualified"),
+                new SelectOption(LocalizationService.Instance["Filter.OptionLoved"], "loved")
             }),
-            FilterTemplate.Input.Collection => new DropdownSelectorViewModel(this, Exporter.Lazer!.Collections.Keys.ToList())
+            FilterTemplate.Input.Collection => new DropdownSelectorViewModel(this,
+                Exporter.Lazer!.Collections.Keys.Select(k => new SelectOption(k, k)).ToList())
         };
 
         /// <summary>

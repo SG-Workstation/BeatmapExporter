@@ -1,4 +1,5 @@
-﻿using BeatmapExporterCore.Utilities;
+﻿using BeatmapExporterCore.Localization;
+using BeatmapExporterCore.Utilities;
 using BeatmapExporterGUI.Exporter;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Threading.Tasks;
@@ -75,7 +76,7 @@ namespace BeatmapExporterGUI.ViewModels.HomePage
             var update = await ExporterUpdater.CheckNewerVersionAvailable();
             if (update.HasValue)
             {
-                UpdateAvailable = $"{update.Value.Current} -> {update.Value.New}";
+                UpdateAvailable = LocalizationService.Instance.Format("Update.VersionChange", update.Value.Current, update.Value.New);
             }
         }
         /// <summary>

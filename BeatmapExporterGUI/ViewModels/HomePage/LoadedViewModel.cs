@@ -1,5 +1,6 @@
 ﻿using BeatmapExporterCore.Exporters;
 using BeatmapExporterCore.Exporters.Lazer;
+using BeatmapExporterCore.Localization;
 using System.Linq;
 
 namespace BeatmapExporterGUI.ViewModels.HomePage
@@ -27,5 +28,16 @@ namespace BeatmapExporterGUI.ViewModels.HomePage
         /// The export mode currently selected on this LazerExporter.
         /// </summary>
         public string ExportMode => Lazer.Configuration.ExportFormat.UnitName();
+
+        /// <summary>
+        /// Localized display strings for home page dashboard.
+        /// </summary>
+        public string TotalBeatmapSets => LocalizationService.Instance.Format("Home.BeatmapSets", Lazer.TotalBeatmapSetCount);
+        public string TotalBeatmapDiffs => LocalizationService.Instance.Format("Home.BeatmapDiffs", Lazer.TotalBeatmapCount);
+        public string TotalCollections => LocalizationService.Instance.Format("Home.BeatmapCollections", Lazer.CollectionCount);
+        public string SelectedSets => LocalizationService.Instance.Format("Home.SetsSelected", Lazer.SelectedBeatmapSetCount);
+        public string SelectedDiffs => LocalizationService.Instance.Format("Home.DiffsSelected", Lazer.SelectedBeatmapCount);
+        public string FiltersInfo => LocalizationService.Instance.Format("Home.FiltersApplied", Filters);
+        public string ExportModeInfo => LocalizationService.Instance.Format("Home.ExportMode", Lazer.Configuration.ExportFormat.UnitName());
     }
 }

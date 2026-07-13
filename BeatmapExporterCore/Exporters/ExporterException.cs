@@ -1,4 +1,5 @@
-﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB;
+﻿using BeatmapExporterCore.Localization;
+using BeatmapExporterCore.Exporters.Lazer.LazerDB;
 using BeatmapExporterCore.Utilities;
 
 namespace BeatmapExporterCore.Exporters
@@ -37,17 +38,15 @@ namespace BeatmapExporterCore.Exporters
             string exporterVersion = ExporterUpdater.FeatureVersion;
             if (fileSchema > exporterSchema)
             {
-                // Typical update required scenario 
-                yield return $"The osu!lazer database file being loaded is from a newer version of osu!lazer (using database version {fileSchema}) than this version of BeatmapExporter ({exporterVersion}) was built for (database version {exporterSchema}).";
-                yield return "You can check GitHub for a newer release, or file an issue there to let me know it needs updating if needed.";
+                yield return LocalizationService.Instance.Format("Exception.DatabaseSuffix", fileSchema, exporterVersion, exporterSchema);
+                yield return LocalizationService.Instance["Exception.DatabaseDefault"];
             } else
             {
-                // Older version mismatch scenario, suggest causes
-                yield return $"The osu!lazer database file being loaded is from an OLDER version of osu!lazer than this version of BeatmapExporter was designed for.";
-                yield return "If you are simply trying to export from your game, ensure that the correct database file your game uses is the one being loaded, and that your game is up-to-date.";
-                yield return $"If things are correct and you still want to export from this specific database file/backup, you should check the BeatmapExporter GitHub releases for the version that contains the database version {fileSchema} in the title.";
-                yield return "Linux users: it seems sometimes the Linux release is a version or two behind other platforms despite having the same release numbers. If your game is up-to-date and you are getting this error then this has likely occured again. You can easily work around this by using the matching version of BeatmapExporter as well.";
-                yield return $"You can check {ExporterUpdater.Releases} for the correct release to open the selected database file using version {fileSchema}. It would contain the database version in the title, such as BeatmapExporter X.X.X ({fileSchema})";
+                yield return LocalizationService.Instance.Format("Exception.DatabaseForced", fileSchema);
+                yield return LocalizationService.Instance["Exception.DatabaseDefault"];
+                yield return LocalizationService.Instance.Format("Exception.DatabaseSuffix", fileSchema);
+                yield return LocalizationService.Instance["Exception.DatabaseDefault"];
+                yield return LocalizationService.Instance.Format("Exception.DatabaseSuffix", fileSchema, ExporterUpdater.Releases);
             }
         }
 
@@ -60,8 +59,8 @@ namespace BeatmapExporterCore.Exporters
 
         private static IEnumerable<string> UpgradeDetails(int fileFormat)
         {
-            yield return $"The osu!lazer database file being loaded is using a different file format ({fileFormat}) than this version of BeatmapExporter was designed for.";
-            yield return "Please first ensure you are loading the correct database, then file an issue on GitHub to let me know that there is a problem.";
+            yield return LocalizationService.Instance.Format("Exception.DatabaseIncompatible", fileFormat);
+            yield return LocalizationService.Instance["Exception.DatabaseDefault"];
         }
     }
 }

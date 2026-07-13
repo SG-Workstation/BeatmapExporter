@@ -9,45 +9,45 @@
 
   <Menu>
     
-    <MenuItem Header="_File">
-      <MenuItem Header="_Home" 
+    <MenuItem Header="{Binding Loc[Menu.File]}">
+      <MenuItem Header="{Binding Loc[Menu.Home]}" 
                 Command="{Binding HomeCommand}" />
-      <MenuItem Header="_Close Database"
+      <MenuItem Header="{Binding Loc[Menu.CloseDatabase]}"
                 Command="{Binding CloseCommand}" />
       <Separator />
-      <MenuItem Header="_Exit BeatmapExporter"
+      <MenuItem Header="{Binding Loc[Menu.Exit]}"
                 Command="{Binding ExitCommand}"/>
     </MenuItem>
     
-    <MenuItem Header="_Export">
-      <MenuItem Header="Search _Beatmaps"
+    <MenuItem Header="{Binding Loc[Menu.Export]}">
+      <MenuItem Header="{Binding Loc[Menu.SearchBeatmaps]}"
                 Command="{Binding BeatmapsCommand}" />
-      <MenuItem Header="View _Collections"
+      <MenuItem Header="{Binding Loc[Menu.ViewCollections]}"
                 Command="{Binding CollectionsCommand}" />
       <Separator />
-      <MenuItem Header="_Filter/Export Beatmaps" 
+      <MenuItem Header="{Binding Loc[Menu.FilterExport]}" 
                 Command="{Binding ConfigurationCommand}" />
-      <MenuItem Header="Begin Export _Now"
+      <MenuItem Header="{Binding Loc[Menu.BeginExportNow]}"
                 Command="{Binding ExportCommand}" />
     </MenuItem>
     
-    <MenuItem Header="_About">
-      <MenuItem Header="{Binding ProgramVersion, StringFormat=BeatmapExporter version: {0}}"
+    <MenuItem Header="{Binding Loc[Menu.About]}">
+      <MenuItem Header="{Binding VersionInfo}"
                 IsEnabled="False" />
-      <MenuItem Header="{Binding LazerVersion, StringFormat=Built for osu!lazer release: {0}}"
+      <MenuItem Header="{Binding LazerReleaseVersion}"
                 IsEnabled="False" />
-      <MenuItem Header="{Binding DatabaseVersion, StringFormat=osu!lazer database version: {0}}"
+      <MenuItem Header="{Binding DatabaseVersionInfo}"
                 IsEnabled="False" />
-      <MenuItem Header="BeatmapExporter _GitHub Project"
+      <MenuItem Header="{Binding Loc[Menu.GitHubProject]}"
                 Command="{Binding GitHub}" />
-      <MenuItem Header="BeatmapExporter Releases"
+      <MenuItem Header="{Binding Loc[Menu.Releases]}"
                 Command="{Binding Releases}" />
-      <MenuItem Header="osu! GitHub Releases"
+      <MenuItem Header="{Binding Loc[Menu.OsuReleases]}"
                 Command="{Binding Osu}" />
       <Separator />
-      <MenuItem Header="_View BeatmapExporter AppData"
+      <MenuItem Header="{Binding Loc[Menu.ViewAppData]}"
                 Command="{Binding ApplicationData}" />
-      <MenuItem Header="_Reset BeatmapExporter Settings"
+      <MenuItem Header="{Binding Loc[Menu.ResetSettings]}"
                 Command="{Binding ResetCommand}" />
     </MenuItem>
   </Menu>

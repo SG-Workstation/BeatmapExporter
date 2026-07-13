@@ -6,10 +6,9 @@
         xmlns:views="clr-namespace:BeatmapExporterGUI.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="BeatmapExporterGUI.Views.MainWindow"
-         
-        Title="BeatmapExporter"
+        x:DataType="vm:OuterViewModel"
+        Title="{Binding Loc[MainWindow.Title]}"
         Icon="avares://BeatmapExporterGUI/Assets/bmex.ico"
-        FontFamily="{StaticResource Exo2}"
         
         ExtendClientAreaToDecorationsHint="True"
         

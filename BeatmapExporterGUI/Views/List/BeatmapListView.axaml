@@ -18,7 +18,8 @@
                   Spacing="24">
 
         <TextBlock FontSize="24"
-                   HorizontalAlignment="Center">Beatmap List</TextBlock>
+                   HorizontalAlignment="Center"
+                   Text="{Binding Loc[List.Title]}" />
 
         <StackPanel Spacing="12">
           <DockPanel>
@@ -26,7 +27,8 @@
             <StackPanel DockPanel.Dock="Right"
                         Orientation="Horizontal">
 
-              <TextBlock VerticalAlignment="Center">Sort by:</TextBlock>
+              <TextBlock VerticalAlignment="Center"
+                         Text="{Binding Loc[List.SortBy]}" />
               <ComboBox Margin="6,0"
                         ItemsSource="{Binding SortOptionNames}"
                         SelectedIndex="{Binding SelectedSortOption}" />
@@ -35,24 +37,28 @@
 
             <StackPanel Orientation="Horizontal">
 
-              <TextBlock VerticalAlignment="Center">View:</TextBlock>
+              <TextBlock VerticalAlignment="Center"
+                         Text="{Binding Loc[List.View]}" />
               <ComboBox Margin="6,0"
                       ItemsSource="{Binding DisplayOptionNames}"
                       SelectedIndex="{Binding SelectedDisplayOption}" />
             
             </StackPanel>
 
-            <Button Command="{Binding ExportEntireBeatmapSetCommand}">Export Selected Beatmap Set</Button>
+            <Button Command="{Binding ExportEntireBeatmapSetCommand}">
+              <TextBlock Text="{Binding Loc[List.ExportSet]}" />
+            </Button>
 
             <Button Command="{Binding OpenExportDirectory}"
-                    Margin="6,0">Open Export Directory</Button>
+                    Margin="6,0">
+              <TextBlock Text="{Binding Loc[List.OpenExportDir]}" />
+            </Button>
           
           </DockPanel>
 
-          <!-- Search/Filter Box -->
           <StackPanel Orientation="Horizontal">
 
-            <TextBox Watermark="Search..." 
+            <TextBox Watermark="{Binding Loc[List.Search]}" 
                      Width="216" 
                      Text="{Binding UserSearchInput} "/>
           
@@ -85,7 +91,8 @@
                 Spacing="24">
 
       <TextBlock FontSize="24"
-                 HorizontalAlignment="Center">Beatmap File Viewer</TextBlock>
+                 HorizontalAlignment="Center"
+                 Text="{Binding Loc[List.FileViewer]}" />
       
       <TransitioningContentControl Content="{Binding BeatmapExplorer}" />
 

@@ -31,20 +31,27 @@
         <StackPanel Spacing="12">
           <TextBlock FontSize="32"
                      HorizontalAlignment="Center"
-                     FontWeight="Bold">Update Available</TextBlock>
-          <TextBlock>An update is available for BeatmapExporter. </TextBlock>
-          <TextBlock TextWrapping="Wrap">This update may be required if you are no longer able to open the osu!lazer database.</TextBlock>
-          <TextBlock TextWrapping="Wrap">Changes made to osu! often force this program to be updated as well.</TextBlock>
-          <TextBlock TextWrapping="Wrap">If the program is still working with your version of osu!, you do not need to update yet.</TextBlock>
-          <TextBlock Text="{Binding UpdateAvailable, StringFormat=Version change: {0}}" 
+                     FontWeight="Bold"
+                     Text="{Binding Loc[Update.Available]}" />
+          <TextBlock Text="{Binding Loc[Update.Description]}" />
+          <TextBlock TextWrapping="Wrap"
+                     Text="{Binding Loc[Update.RequiredNotice]}" />
+          <TextBlock TextWrapping="Wrap"
+                     Text="{Binding Loc[Update.ChangesNotice]}" />
+          <TextBlock TextWrapping="Wrap"
+                     Text="{Binding Loc[Update.NotRequired]}" />
+          <TextBlock Text="{Binding UpdateAvailable}"
                      FontWeight="Bold"/>
           <Button Classes="accent"
-                  Command="{Binding Release}">View Latest Release (GitHub)</Button>
+                  Command="{Binding Release}">
+            <TextBlock Text="{Binding Loc[Update.ViewRelease]}" />
+          </Button>
         </StackPanel>
       </Border>
 
       <TextBlock FontSize="24"
-                 HorizontalAlignment="Center">Status Messages</TextBlock>
+                 HorizontalAlignment="Center"
+                 Text="{Binding Loc[Home.StatusMessages]}" />
 
       <ScrollViewer Name="SystemMessages">
         <ItemsControl ItemsSource="{Binding Exporter.SystemMessages}"

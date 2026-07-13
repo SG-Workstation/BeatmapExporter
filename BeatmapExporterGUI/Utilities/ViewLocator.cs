@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using BeatmapExporterCore.Localization;
 using BeatmapExporterGUI.ViewModels;
 using System;
 
@@ -12,7 +13,7 @@ namespace BeatmapExporterGUI.Utilities
         {
             if (data is null)
             {
-                return new TextBlock { Text = "data was null" };
+                return new TextBlock { Text = LocalizationService.Instance["ViewLocator.NullData"] };
             }
 
             var name = data.GetType().FullName!.Replace("ViewModel", "View");
@@ -24,7 +25,7 @@ namespace BeatmapExporterGUI.Utilities
             }
             else
             {
-                return new TextBlock { Text = "Not Found: " + name };
+                return new TextBlock { Text = LocalizationService.Instance.Format("ViewLocator.NotFound", name) };
             }
         }
 

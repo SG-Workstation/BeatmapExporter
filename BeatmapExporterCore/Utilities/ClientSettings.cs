@@ -52,6 +52,8 @@ namespace BeatmapExporterCore.Utilities
         public bool ExportMp3 { get; set; } = true;
 
         public List<SerializedBeatmapFilter> AppliedFilters { get; set; } = [];
+
+        public string? Language { get; set; } = null;
         #endregion
 
         #region Serialization Methods
@@ -181,6 +183,12 @@ namespace BeatmapExporterCore.Utilities
         public void SaveExportMp3(bool mp3)
         {
             ExportMp3 = mp3;
+            TrySave();
+        }
+
+        public void SaveLanguage(string? language)
+        {
+            Language = language;
             TrySave();
         }
 

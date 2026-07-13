@@ -1,4 +1,5 @@
-﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
+﻿using BeatmapExporterCore.Localization;
+using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,13 +56,13 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// </summary>
         public static string FullName(this SortBy sort) => sort switch
         {
-            SortBy.ID => "Beatmap ID",
-            SortBy.Artist => "Artist Name",
-            SortBy.DateAdded => "Date Added",
-            SortBy.Count => "# Beatmaps",
-            SortBy.Title => "Song Title",
-            SortBy.Author => "Mapper Name",
-            SortBy.Length => "Song Length"
+            SortBy.ID => LocalizationService.Instance["Sort.ID"],
+            SortBy.Artist => LocalizationService.Instance["Sort.Artist"],
+            SortBy.DateAdded => LocalizationService.Instance["Sort.DateAdded"],
+            SortBy.Count => LocalizationService.Instance["Sort.Count"],
+            SortBy.Title => LocalizationService.Instance["Sort.Title"],
+            SortBy.Author => LocalizationService.Instance["Sort.Author"],
+            SortBy.Length => LocalizationService.Instance["Sort.Length"]
         };
 
         /// <summary>
@@ -88,8 +89,8 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// </summary>
         public static string SetName(this View display) => display switch
         {
-            View.Selected => "Filtered Beatmaps",
-            View.All => "All Beatmaps"
+            View.Selected => LocalizationService.Instance["View.Filtered"],
+            View.All => LocalizationService.Instance["View.All"]
         };
 
         /// <summary>
@@ -97,8 +98,8 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// </summary>
         public static string DiffName(this View display) => display switch
         {
-            View.Selected => "Filtered Difficulties Only",
-            View.All => "All Difficulties"
+            View.Selected => LocalizationService.Instance["View.FilteredDiffs"],
+            View.All => LocalizationService.Instance["View.AllDiffs"]
         };
     }
 }

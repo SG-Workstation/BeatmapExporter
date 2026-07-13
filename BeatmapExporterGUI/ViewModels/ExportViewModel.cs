@@ -1,6 +1,7 @@
 ﻿using BeatmapExporterCore.Exporters;
 using BeatmapExporterCore.Exporters.Lazer;
 using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
+using BeatmapExporterCore.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace BeatmapExporterGUI.ViewModels
             this.outer = outer;
             Exported = new();
 
-            TaskTitle = $"Exporting {lazer.Configuration.ExportFormat.UnitName()}";
+            TaskTitle = LocalizationService.Instance.Format("Export.TitleFormat", lazer.Configuration.ExportFormat.UnitName());
             TotalSetCount = lazer.SelectedBeatmapSetCount;
             Progress = 0;
             Description = string.Empty;
@@ -103,7 +104,7 @@ namespace BeatmapExporterGUI.ViewModels
                 await operation(token);
             } catch (Exception e)
             {
-                AddExport(false, $"Export process cancelled due to error: {e}");
+                AddExport(false, LocalizationService.Instance.Format("Export.CancelledError", e));
                 Logger.Error(e);
             }
             ActiveExport = false;
@@ -117,7 +118,7 @@ namespace BeatmapExporterGUI.ViewModels
             lazer.SetupExport();
             TotalCount = TotalSetCount;
             int exported = 0;
-            Description = $"{TotalSetCount} beatmap sets ({lazer.SelectedBeatmapCount} diffs) are selected for export.";
+            Description = LocalizationService.Instance.Format("Export.SelectionInfo", TotalSetCount, lazer.SelectedBeatmapCount);
             foreach (var mapset in lazer.SelectedBeatmapSets)
             {
                 if (token.IsCancellationRequested)
@@ -137,15 +138,15 @@ namespace BeatmapExporterGUI.ViewModels
                         await Exporter.RealmScheduler.Schedule(() => lazer.ExportBeatmap(mapset, out filename));
                     }
                     exported++;
-                    AddExport(true, $"Exported beatmap set ({Progress + 1}/{TotalSetCount}): {filename}");
+                    AddExport(true, LocalizationService.Instance.Format("Export.Progress", Progress + 1, TotalSetCount, filename));
                 } catch (Exception e)
                 {
-                    AddExport(false, $"Unable to export {filename} :: {e.Message}");
+                    AddExport(false, LocalizationService.Instance.Format("Export.Error", filename, e.Message));
                     Logger.Error(e);
                 }
                 Progress++;
             }
-            var status = $"Exported {exported}/{TotalSetCount} beatmaps to {lazer.Configuration.FullPath}.";
+            var status = LocalizationService.Instance.Format("Export.Complete", exported, TotalSetCount, lazer.Configuration.FullPath);
             Exporter.AddSystemMessage(status);
             Description = status;
         }
@@ -159,7 +160,7 @@ namespace BeatmapExporterGUI.ViewModels
         {
             lazer.SetupExport();
             TotalCount = TotalSetCount;
-            Description = $"Exporting audio from {TotalSetCount} beatmap sets as .mp3 files.\n{lazer.AudioTranscodeInfo()}";
+            Description = LocalizationService.Instance.Format("Export.AudioIntro", TotalSetCount, lazer.AudioTranscodeInfo());
 
             int exportedAudio = 0, discovered = 0;
             foreach (var mapset in lazer.SelectedBeatmapSets)
@@ -176,7 +177,7 @@ namespace BeatmapExporterGUI.ViewModels
                     Progress++;
                 });
             }
-            var status = $"Exported {exportedAudio}/{discovered} audio files from {TotalSetCount} beatmaps to {lazer.Configuration.FullPath}.";
+            var status = LocalizationService.Instance.Format("Export.AudioComplete", exportedAudio, discovered, TotalSetCount, lazer.Configuration.FullPath);
             Description = status;
             Exporter.AddSystemMessage(status);
         }
@@ -200,22 +201,22 @@ namespace BeatmapExporterGUI.ViewModels
                 {
                     if (transcode && !lazer.TranscodeAvailable)
                     {
-                        AddExport(false, $"Non-mp3 audio {audioExport.OutputFilename} found and FFmpeg is not loaded, this audio will be skipped.");
+                        AddExport(false, LocalizationService.Instance.Format("Export.AudioSkip", audioExport.OutputFilename));
                         continue;
                     }
-                    AddExport(true, $"({totalDiscovered}/?) Exporting {audioExport.OutputFilename}{transcodeNotice}");
+                    AddExport(true, LocalizationService.Instance.Format("Export.AudioProgress", totalDiscovered, audioExport.OutputFilename, transcodeNotice));
 
-                    void metadataFailure(Exception e) => AddExport(false, $"Unable to set metadata for {audioExport.OutputFilename} :: {e.Message}. Exporting will continue.");
+                    void metadataFailure(Exception e) => AddExport(false, LocalizationService.Instance.Format("Export.AudioMetaError", audioExport.OutputFilename, e.Message));
                     lazer.ExportAudio(audioExport, metadataFailure);
                     exportedAudio++;
                 }
                 catch (TranscodeException te)
                 {
-                    AddExport(false, $"Unable to transcode audio: {audioFile}. An error occured :: {te.Message}");
+                    AddExport(false, LocalizationService.Instance.Format("Export.AudioTranscodeError", audioFile, te.Message));
                 }
                 catch (Exception e)
                 {
-                    AddExport(false, $"Unable to export audio: {audioFile} :: {e.Message}");
+                    AddExport(false, LocalizationService.Instance.Format("Export.AudioFileError", audioFile, e.Message));
                     Logger.Error(e);
                 }
             }
@@ -231,7 +232,7 @@ namespace BeatmapExporterGUI.ViewModels
         {
             lazer.SetupExport();
             TotalCount = TotalSetCount;
-            Description = $"Exporting beatmap background images from {TotalSetCount} beatmap sets.";
+            Description = LocalizationService.Instance.Format("Export.BackgroundIntro", TotalSetCount);
 
             int discovered = 0, exportedBackgrounds = 0;
             foreach (var mapset in lazer.SelectedBeatmapSets)
@@ -248,7 +249,7 @@ namespace BeatmapExporterGUI.ViewModels
                     Progress++;
                 });
             }
-            var status = $"Exported {exportedBackgrounds}/{discovered} background files from {TotalSetCount} beatmaps to {lazer.Configuration.FullPath}.";
+            var status = LocalizationService.Instance.Format("Export.BackgroundComplete", exportedBackgrounds, discovered, TotalSetCount, lazer.Configuration.FullPath);
             Description = status;
             Exporter.AddSystemMessage(status);
         }
@@ -271,11 +272,11 @@ namespace BeatmapExporterGUI.ViewModels
                 {
                     lazer.ExportBackground(imageExport);
                     exportedBackgrounds++;
-                    AddExport(true, $"({totalDiscovered}/?) Exported background image {imageExport.OutputFilename}.");
+                    AddExport(true, LocalizationService.Instance.Format("Export.BackgroundProgress", totalDiscovered, imageExport.OutputFilename));
                 }
                 catch (Exception e)
                 {
-                    AddExport(false, $"Unable to export background image {backgroundFile} :: {e.Message}");
+                    AddExport(false, LocalizationService.Instance.Format("Export.BackgroundError", backgroundFile, e.Message));
                     Logger.Error(e);
                 }
             }
@@ -293,7 +294,7 @@ namespace BeatmapExporterGUI.ViewModels
             var replayCount = selectedReplays.Count();
             TotalCount = replayCount;
 
-            Description = $"Exporting {replayCount} replays from {lazer.SelectedBeatmapCount} selected beatmaps.";
+            Description = LocalizationService.Instance.Format("Export.ReplayIntro", replayCount, lazer.SelectedBeatmapCount);
             var exportedReplays = 0;
             foreach (var replay in selectedReplays)
             {
@@ -305,15 +306,15 @@ namespace BeatmapExporterGUI.ViewModels
                 {
                     await Exporter.RealmScheduler.Schedule(() => lazer.ExportReplay(replay, out filename));
                     exportedReplays++;
-                    AddExport(true, $"Exported player score replay {exportedReplays}/{replayCount}: {filename}.");
+                    AddExport(true, LocalizationService.Instance.Format("Export.ReplayProgress", exportedReplays, replayCount, filename));
                 } catch (Exception e)
                 {
-                    AddExport(false, $"Unable to export player score replay {filename} :: {e.Message}");
+                    AddExport(false, LocalizationService.Instance.Format("Export.ReplayError", filename, e.Message));
                     Logger.Error(e);
                 }
                 Progress++;
             }
-            var status = $"Exported {exportedReplays}/{replayCount} player score replays from {TotalSetCount} beatmaps to {lazer.Configuration.FullPath}.";
+            var status = LocalizationService.Instance.Format("Export.ReplayComplete", exportedReplays, replayCount, TotalSetCount, lazer.Configuration.FullPath);
             Description = status;
             Exporter.AddSystemMessage(status);
         }
@@ -323,7 +324,7 @@ namespace BeatmapExporterGUI.ViewModels
             lazer.SetupExport();
             var skins = lazer.Skins;
             TotalCount = skins.Count;
-            Description = $"Exporting {TotalCount} skins.";
+            Description = LocalizationService.Instance.Format("Export.SkinIntro", TotalCount);
 
             var exported = 0;
             foreach (var skin in skins)
@@ -336,17 +337,17 @@ namespace BeatmapExporterGUI.ViewModels
                 {
                     await Exporter.RealmScheduler.Schedule(() => lazer.ExportSkin(skin, out filename));
                     exported++;
-                    AddExport(true, $"Exported skin {exported}/{TotalCount}: {filename}.");
+                    AddExport(true, LocalizationService.Instance.Format("Export.SkinProgress", exported, TotalCount, filename));
                 }
                 catch (Exception e)
                 {
-                    AddExport(false, $"Unable to export skin {filename} :: ${e.Message}");
+                    AddExport(false, LocalizationService.Instance.Format("Export.SkinError", filename, e.Message));
                     Logger.Error(e);
                 }
                 Progress++;
             }
 
-            var status = $"Exported {exported}/{TotalCount} skins to {lazer.Configuration.FullPath}.";
+            var status = LocalizationService.Instance.Format("Export.SkinComplete", exported, TotalCount, lazer.Configuration.FullPath);
             Description = status;
             Exporter.AddSystemMessage(status);
         }
@@ -361,7 +362,7 @@ namespace BeatmapExporterGUI.ViewModels
                 steps = await Exporter.RealmScheduler.Schedule(() => lazer.ExportCollectionDb());
             } catch (Exception e)
             {
-                AddExport(false, $"Unable to export collection.db file :: {e.Message}");
+                AddExport(false, LocalizationService.Instance.Format("Export.CollectionDbError", e.Message));
                 Logger.Error(e);
                 return;
             }
@@ -371,9 +372,9 @@ namespace BeatmapExporterGUI.ViewModels
             Progress = included;
             foreach (var step in steps)
             {
-                AddExport(true, $"Adding \"{step.Name}\" to collection.db with {step.IncludedDiffs}/{step.OriginalDiffs} included after applying filters.");
+                AddExport(true, LocalizationService.Instance.Format("Export.CollectionDbProgress", step.Name, step.IncludedDiffs, step.OriginalDiffs));
             }
-            var status = $"Exported collection.db file with {included} collections included.";
+            var status = LocalizationService.Instance.Format("Export.CollectionDbComplete", included);
             Description = status;
             Exporter.AddSystemMessage(status);
         }
@@ -383,6 +384,6 @@ namespace BeatmapExporterGUI.ViewModels
     {
         public readonly string Color => Success ? "" : "Red";
 
-        public readonly string Detail => Success ? Description : "(!)" + Description;
+        public readonly string Detail => Success ? Description : LocalizationService.Instance["Export.ErrorPrefix"] + Description;
     }
 }

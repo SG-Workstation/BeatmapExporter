@@ -10,10 +10,11 @@
   <StackPanel Spacing="20"
               HorizontalAlignment="Center">
 
-    <TextBlock FontSize="24">There is no osu! database currently loaded.</TextBlock>
+    <TextBlock FontSize="24"
+               Text="{Binding Loc[Home.NotLoaded]}" />
 
     <Button Command="{Binding OpenCommand}">
-      Select an osu!lazer database...
+      <TextBlock Text="{Binding Loc[Home.SelectDatabase]}" />
     </Button>
 
   </StackPanel>

@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using BeatmapExporterCore.Localization;
 using BeatmapExporterCore.Exporters;
 using BeatmapExporterCore.Exporters.Lazer;
 using BeatmapExporterCore.Exporters.Lazer.LazerDB;
@@ -59,31 +60,42 @@ namespace BeatmapExporterGUI.Exporter
             } catch (Exception e)
             {
                 // Display error to user and use default settings
-                AddSystemMessage($"Unable to load application settings: {e.Message}", error: true);
+                AddSystemMessage(LocalizationService.Instance.Format("App.LoadSettingsError", e.Message), error: true);
                 settings = new();
+            }
+
+            // Restore saved language preference
+            if (settings.Language is not null)
+            {
+                var locale = LocalizationService.Instance.AvailableLocales
+                    .FirstOrDefault(l => l.Culture == settings.Language);
+                if (locale is not null)
+                {
+                    LocalizationService.Instance.CurrentLocale = locale;
+                }
             }
             
             // Attempt to load FFmpeg transcoder
             var transcoder = new Transcoder();
             AddSystemMessage(transcoder.Available
-                ? "FFmpeg successfully loaded! .mp3 export for beatmaps that use other audio formats will be available."
-                : "FFmpeg not found. Conversion to .mp3 for beatmap audio export will not be available. This is not required and you can ignore this warning if you are not trying to output mp3 files.");
+                ? LocalizationService.Instance["App.FFmpegLoaded"]
+                : LocalizationService.Instance["App.FFmpegNotFound"]);
 
             // load the osu!lazer database here, check default directories
             List<string?> userDirs = [userDir, settings.DatabasePath];
             var checkDirs = userDirs.Concat(LazerDatabase.GetDefaultDirectories());
-            AddSystemMessage("Now checking known osu!lazer storage locations.");
+            AddSystemMessage(LocalizationService.Instance["App.CheckingLocations"]);
 
             string? dbFile = null;
             foreach (var dir in checkDirs)
             {
                 // check each provided or default lazer directory
                 if (dir is null) continue;
-                AddSystemMessage($"Checking directory: {dir}");
+                AddSystemMessage(LocalizationService.Instance.Format("App.CheckingDir", dir));
                 dbFile = LazerDatabase.GetDatabaseFile(dir);
                 if (dbFile is null)
                 {
-                    AddSystemMessage($"osu! song database not found at {dir}.", error: true);
+                    AddSystemMessage(LocalizationService.Instance.Format("App.DirNotFound", dir), error: true);
                 } else
                 {
                     break; // database found, do not check more locations
@@ -94,8 +106,8 @@ namespace BeatmapExporterGUI.Exporter
             // the user will be able to use a standard button for selecting the database if nothing is loaded 
             if (dbFile is null)
             {
-                AddSystemMessage("osu! song database not found. Please find and provide your osu!lazer data folder.", error: true);
-                AddSystemMessage("The folder should contain a \"client.realm\" file and can be opened from in-game to locate it.");
+                AddSystemMessage(LocalizationService.Instance["App.DbNotFound"], error: true);
+                AddSystemMessage(LocalizationService.Instance["App.DbNotFoundHint"]);
                 return false;
             }
 
@@ -108,7 +120,7 @@ namespace BeatmapExporterGUI.Exporter
                     throw new IOException("Unable to open osu! database.");
             } catch (Exception e)
             {
-                AddSystemMessage($"Error opening database: {e.Message}", error: true);
+                AddSystemMessage(LocalizationService.Instance.Format("App.DbOpenError", e.Message), error: true);
                 if (e is LazerVersionException version)
                 {
                     foreach (var message in version.Details)
@@ -118,13 +130,13 @@ namespace BeatmapExporterGUI.Exporter
                 }
                 else
                 {
-                    AddSystemMessage("This is an abnormal error, and you may need to open a GitHub issue for further assistance.", error: true);
+                    AddSystemMessage(LocalizationService.Instance["App.DbAbnormalError"], error: true);
                 }
                 return false;
             }
 
-            AddSystemMessage($"Opened osu! database: {dbFile}");
-            AddSystemMessage("Loading database...");
+            AddSystemMessage(LocalizationService.Instance.Format("App.DbOpened", dbFile));
+            AddSystemMessage(LocalizationService.Instance["App.DbLoading"]);
             settings.SaveDatabase(dbFile);
 
             // load beatmaps into memory for filtering/export later
@@ -134,7 +146,7 @@ namespace BeatmapExporterGUI.Exporter
 
             // replace any current exporter for this ExporterApp instance with the newly loaded database
             Lazer = new(database, settings, beatmaps, collections, skins, transcoder);
-            AddSystemMessage($"Load complete. Found {beatmaps.Count} beatmaps, {collections.Count} collections, {skins.Count} skins.");
+            AddSystemMessage(LocalizationService.Instance.Format("App.LoadComplete", beatmaps.Count, collections.Count, skins.Count));
             return true;
         }
 

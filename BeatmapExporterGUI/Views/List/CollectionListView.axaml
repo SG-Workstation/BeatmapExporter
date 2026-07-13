@@ -18,7 +18,8 @@
                   Spacing="24">
 
         <TextBlock FontSize="24"
-                   HorizontalAlignment="Center">Collection List</TextBlock>
+                   HorizontalAlignment="Center"
+                   Text="{Binding Loc[Collection.Title]}" />
         
         <ListBox ItemsSource="{Binding CollectionList}"
                  SelectedItem="{Binding SelectedCollection}"
@@ -34,7 +35,8 @@
                 Spacing="24">
 
       <TextBlock FontSize="24"
-                 HorizontalAlignment="Center">Beatmaps in Collection</TextBlock>
+                 HorizontalAlignment="Center"
+                 Text="{Binding Loc[Collection.Beatmaps]}" />
 
       <ListBox ItemsSource="{Binding BeatmapDetails}"
                Name="BeatmapList"

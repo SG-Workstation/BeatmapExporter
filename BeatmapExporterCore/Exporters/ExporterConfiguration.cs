@@ -12,6 +12,8 @@ namespace BeatmapExporterCore.Exporters
     {
         private ClientSettings settings;
 
+        public ClientSettings ClientSettings => settings;
+
         private string? exportPath = null;
         private bool combineFilterMode;
         private ExportFormat exportFormat;

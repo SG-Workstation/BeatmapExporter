@@ -1,4 +1,5 @@
 ﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB;
+using BeatmapExporterCore.Localization;
 using BeatmapExporterCore.Utilities;
 using BeatmapExporterGUI.Exporter;
 using CommunityToolkit.Mvvm.Input;
@@ -70,11 +71,9 @@ public partial class MenuRowViewModel : ViewModelBase
 
     // The below properties are references to the relevant BeatmapExporter version numbers
 
-    public string ProgramVersion => ExporterUpdater.FeatureVersion;
-
-    public string DatabaseVersion => LazerDatabase.LazerSchemaVersion.ToString();
-
-    public string LazerVersion => LazerDatabase.FirstLazerVersion;
+    public string VersionInfo => LocalizationService.Instance.Format("Menu.VersionInfo", Exporter.Lazer!.LazerVersionString);
+    public string LazerReleaseVersion => LocalizationService.Instance.Format("Menu.LazerRelease", Exporter.Lazer!.LazerVersionString);
+    public string DatabaseVersionInfo => LocalizationService.Instance.Format("Menu.LazerDbVersion", Exporter.Lazer!.DataSchemaVersion);
 
     // The below commands are all web links available for the user to open in browser.
 
@@ -100,7 +99,7 @@ public partial class MenuRowViewModel : ViewModelBase
         // Overwrite config on disk with defaults
         defaults.TrySave();
 
-        Exporter.AddSystemMessage("BeatmapExporter settings/filters have been reset to defaults and the database has been unloaded.");
+        Exporter.AddSystemMessage(LocalizationService.Instance["App.SettingsReset"]);
 
         if (DatabaseLoaded)
         {

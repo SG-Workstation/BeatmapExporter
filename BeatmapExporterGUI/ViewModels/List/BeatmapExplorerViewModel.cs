@@ -1,4 +1,5 @@
 ﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
+using BeatmapExporterCore.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -38,8 +39,8 @@ namespace BeatmapExporterGUI.ViewModels.List
             {
                 var metadata = set.DiffMetadata;
 
-                SetName = $"{metadata?.Title} ({metadata?.Author.Username})";
-                OnPropertyChanged(nameof(SetName));
+                SetNameInfo = LocalizationService.Instance.Format("Explorer.SelectedSet", $"{metadata?.Title} ({metadata?.Author.Username})");
+                OnPropertyChanged(nameof(SetNameInfo));
 
                 FileNames = set.Files.Select(f => f.Filename).ToList();
                 OnPropertyChanged(nameof(FileNames));
@@ -55,7 +56,7 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// <summary>
         /// The song and mapper name of the beatmap set this explorer represents.
         /// </summary>
-        public string SetName { get; private set; } = string.Empty;
+        public string SetNameInfo { get; private set; } = string.Empty;
 
         #region Diff Display Settings
         /// <summary>

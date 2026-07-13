@@ -1,5 +1,6 @@
 ﻿using BeatmapExporterCore.Exporters;
 using BeatmapExporterCore.Exporters.Lazer;
+using BeatmapExporterCore.Localization;
 using System.Diagnostics.CodeAnalysis;
 
 namespace BeatmapExporterCLI.Interface
@@ -49,7 +50,7 @@ namespace BeatmapExporterCLI.Interface
         public static void Exit()
         {
             // keep console open
-            Console.Write("\nPress any key to exit.\n");
+            Console.Write(LocalizationService.Instance["CLI.ExitPrompt"]);
             Console.ReadKey();
             Environment.Exit(0);
         }
@@ -60,8 +61,16 @@ namespace BeatmapExporterCLI.Interface
         void ApplicationLoop()
         {
             // output main application menu
-            var exportMode = Configuration.ExportFormat == ExportFormat.Skins ? $"all skins (.osk) ({Exporter.Skins.Count} skin files)" : $"selected {Configuration.ExportFormat.UnitName()} ({Exporter.SelectedBeatmapSetCount} beatmap sets, {Exporter.SelectedBeatmapCount} beatmaps)";
-            Console.Write($"\n1. Export {exportMode}\n2. Display selected beatmap sets ({Exporter.SelectedBeatmapSetCount}/{Exporter.TotalBeatmapSetCount} beatmap sets)\n3. Display {Exporter.CollectionCount} beatmap collections\n4. Advanced export settings (mp3/image/replay export, compression, export location)\n5. Edit beatmap selection/filters\n\n0. Exit\nSelect operation: ");
+            var exportMode = Configuration.ExportFormat == ExportFormat.Skins
+                ? LocalizationService.Instance.Format("CLI.SkinExportDesc", Exporter.Skins.Count)
+                : LocalizationService.Instance.Format("CLI.BeatmapExportDesc", Configuration.ExportFormat.UnitName(), Exporter.SelectedBeatmapSetCount, Exporter.SelectedBeatmapCount);
+            Console.Write(LocalizationService.Instance.Format("CLI.MenuExportItem", exportMode));
+            Console.Write(LocalizationService.Instance.Format("CLI.MenuDisplayItem", Exporter.SelectedBeatmapSetCount, Exporter.TotalBeatmapSetCount));
+            Console.Write(LocalizationService.Instance.Format("CLI.MenuCollectionsItem", Exporter.CollectionCount));
+            Console.Write(LocalizationService.Instance["CLI.MenuAdvancedItem"]);
+            Console.Write(LocalizationService.Instance["CLI.MenuFilterItem"]);
+            Console.Write(LocalizationService.Instance["CLI.MenuExitItem"]);
+            Console.Write(LocalizationService.Instance["CLI.MenuSelectPrompt"]);
 
             string? input = Console.ReadLine();
             if (input is null)
@@ -71,7 +80,7 @@ namespace BeatmapExporterCLI.Interface
 
             if (!int.TryParse(input, out int op) || op is < 0 or > 5)
             {
-                Console.WriteLine("\nInvalid operation selected.");
+                Console.WriteLine(LocalizationService.Instance["CLI.InvalidOperation"]);
                 return;
             }
 

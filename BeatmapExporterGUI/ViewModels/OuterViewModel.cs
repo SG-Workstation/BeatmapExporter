@@ -39,7 +39,12 @@ public partial class OuterViewModel : ViewModelBase
     /// <summary>
     /// Changes the active operation to the HomeView instance.
     /// </summary>
-    public void NavigateHome() => CurrentOperation = Home;
+    public void NavigateHome()
+    {
+        if (Exporter.Lazer != null)
+            Home.SetLoaded();
+        CurrentOperation = Home;
+    }
 
     /// <summary>
     /// Changes the active operation to the beatmap list page.

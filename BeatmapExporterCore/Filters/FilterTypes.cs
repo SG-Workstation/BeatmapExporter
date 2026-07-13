@@ -1,4 +1,5 @@
-﻿using BeatmapExporterCore.Utilities;
+﻿using BeatmapExporterCore.Localization;
+using BeatmapExporterCore.Utilities;
 using System.Reflection;
 
 namespace BeatmapExporterCore.Filters
@@ -97,16 +98,16 @@ namespace BeatmapExporterCore.Filters
         #region Filters
         public static FilterTemplate StarRating = new(
             "stars",
-            "Beatmap star rating/difficulty",
-            "minimum",
-            "maximum",
-            "Selects beatmaps by their in-game star rating.\nFor example, input '6.3' to only export beatmaps 6.3 stars or harder, or negate this filter to only export beatmaps 6.3 stars or easier.",
+            LocalizationService.Instance["Filter.Stars"],
+            LocalizationService.Instance["Filter.InputMinimum"],
+            LocalizationService.Instance["Filter.InputMaximum"],
+            LocalizationService.Instance["Filter.StarRatingDetail"],
             Input.RawText,
             (input, negate) =>
             {
                 // 6.3
                 if (!float.TryParse(input, out float starRating))
-                    throw new ArgumentException($"Invalid star rating");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorStarRating"]);
 
                 return new(input, negate,
                     b => b.StarRating >= starRating,
@@ -115,16 +116,16 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Length = new(
             "length",
-            "Song length (seconds)",
-            "longer than",
-            "shorter than",
-            "Selects beatmaps which are longer/shorter than a given number of seconds.\nFor example, input '90' to only export beatmaps 90 seconds or more, or negate this filter to only export beatmaps 90 seconds or less.",
+            LocalizationService.Instance["Filter.Length"],
+            LocalizationService.Instance["Filter.InputLonger"],
+            LocalizationService.Instance["Filter.InputShorter"],
+            LocalizationService.Instance["Filter.LengthDetail"],
             Input.RawText,
             (input, negate) =>
             {
                 // 90
                 if (!int.TryParse(input, out int duration))
-                    throw new ArgumentException("Invalid map length/duration");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorLength"]);
                 int millis = duration * 1000;
 
                 return new(input, negate,
@@ -134,10 +135,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Author = new(
             "author",
-            "Beatmap author",
-            "is",
-            "is NOT",
-            "Selects beatmaps by matching the beatmap creator.\nIf multiple mappers are desired, separate author names with a comma (,).\nFor example, 'RLC, Nathan' would export beatmaps by either beatmap creator.\nNegating this filter would exclude specific beatmap authors from export.",
+            LocalizationService.Instance["Filter.Author"],
+            LocalizationService.Instance["Filter.InputIs"],
+            LocalizationService.Instance["Filter.InputIsNot"],
+            LocalizationService.Instance["Filter.AuthorDetail"],
             Input.RawText,
             (input, negate) =>
             {
@@ -151,10 +152,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Id = new(
             "id",
-            "Beatmap set ID",
-            "is",
-            "is NOT",
-            "Selects beatmaps with a specific beatmap ID.\nIf you want to match multiple IDs, seperate IDs with a comma (,).",
+            LocalizationService.Instance["Filter.Id"],
+            LocalizationService.Instance["Filter.InputIs"],
+            LocalizationService.Instance["Filter.InputIsNot"],
+            LocalizationService.Instance["Filter.IdDetail"],
             Input.RawText,
             (input, negate) =>
             {
@@ -172,16 +173,16 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate BPM = new(
             "bpm",
-            "Song BPM",
-            "minimum",
-            "maximum",
-            "Selects beatmaps with songs above/below a given BPM.\nFor example, input '180' to only export beatmaps 180 BPM or above, or negate the filter to only export beatmaps 180 BPM or below.",
+            LocalizationService.Instance["Filter.BPM"],
+            LocalizationService.Instance["Filter.InputMinimum"],
+            LocalizationService.Instance["Filter.InputMaximum"],
+            LocalizationService.Instance["Filter.BPMDetail"],
             Input.RawText,
             (input, negate) =>
             {
                 // 180
                 if (!int.TryParse(input, out int bpm))
-                    throw new ArgumentException("Invalid BPM");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorBPM"]);
 
                 return new(input, negate,
                     b => b.BPM >= bpm,
@@ -190,17 +191,16 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate AddedSince = new(
             "since",
-            "Beatmap Set added (date)",
-            "in the last",
-            "before",
-            "Selects beatmap sets using the time since they were added to your osu!lazer. This is only as accurate as the date that osu! has recorded.\nFor example, input '8:00' to only export beatmaps added within the last 8 hours." +
-            "\nInput '4' to only export beatmaps added within the last 4 days, or negate this filter to only export beatmaps added more than 4 days ago.",
+            LocalizationService.Instance["Filter.Since"],
+            LocalizationService.Instance["Filter.InputLast"],
+            LocalizationService.Instance["Filter.InputBefore"],
+            LocalizationService.Instance["Filter.SinceDetail"],
             Input.RawText,
             (input, negate) =>
             {
                 // 2:00
                 if (!TimeSpan.TryParse(input, out TimeSpan since))
-                    throw new ArgumentException("Invalid time interval");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorTimeInterval"]);
 
                 return new(input, negate,
                     b =>
@@ -214,16 +214,16 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate RankedSince = new(
             "ranked",
-            "Beatmap Set ranked (date)",
-            "in the last",
-            "before",
-            "Selects beatmap sets using the time since they were ranked.\nFor example, input '30' to only export beatmaps ranked in the last 30 days, or negate this filter to export beatmaps ranked more than 30 days ago",
+            LocalizationService.Instance["Filter.Ranked"],
+            LocalizationService.Instance["Filter.InputLast"],
+            LocalizationService.Instance["Filter.InputBefore"],
+            LocalizationService.Instance["Filter.RankedDetail"],
             Input.RawText,
             (input, negate) =>
             {
                 // 30
                 if (!TimeSpan.TryParse(input, out TimeSpan since))
-                    throw new ArgumentException("Invalid time interval");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorTimeInterval"]);
 
                 return new(input, negate,
                     b =>
@@ -237,10 +237,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Artist = new(
             "artist",
-            "Song artist",
-            "is",
-            "is NOT",
-            "Selects beatmaps by matching the song artist (as tagged within osu!).\nIf multiple artists are desired, separate artist names with a comma (,).\nFor example, 'Camellia, Nanahira' would export beatmaps by either artist.\nNegating this filter would exclude specific artists from export.",
+            LocalizationService.Instance["Filter.Artist"],
+            LocalizationService.Instance["Filter.InputIs"],
+            LocalizationService.Instance["Filter.InputIsNot"],
+            LocalizationService.Instance["Filter.ArtistDetail"],
             Input.RawText,
             (input, negate) =>
             {
@@ -254,10 +254,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Tag = new(
             "tag",
-            "Beatmap tags",
-            "contain",
-            "does NOT contain",
-            "Selects beatmaps which have specific tags (as assigned by the beatmap author).\nIf multiple tags are desired, separate tags wth a comma (,).\nFor example, inputting 'touhou' would only export beatmaps with the tag 'touhou'.\nNegating this filter would exclude specific tags from export.",
+            LocalizationService.Instance["Filter.Tag"],
+            LocalizationService.Instance["Filter.InputContain"],
+            LocalizationService.Instance["Filter.InputNotContain"],
+            LocalizationService.Instance["Filter.TagDetail"],
             Input.RawText,
             (input, negate) =>
             {
@@ -275,10 +275,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Gamemode = new(
             "gamemode",
-            "Beatmap gamemode",
-            "is",
-            "is NOT",
-            "Selects beatmaps which are created for a specific gamemode.\nNegating this filter would exclude those gamemode beatmaps from export.",
+            LocalizationService.Instance["Filter.Gamemode"],
+            LocalizationService.Instance["Filter.InputIs"],
+            LocalizationService.Instance["Filter.InputIsNot"],
+            LocalizationService.Instance["Filter.GamemodeDetail"],
             Input.Gamemode,
             (input, negate) =>
             {
@@ -292,7 +292,7 @@ namespace BeatmapExporterCore.Filters
                     _ => null
                 };
                 if (gamemodeId == null)
-                    throw new ArgumentException($"Unknown osu! game mode. Use osu, mania, ctb, or taiko.");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorGamemode"]);
 
                 return new(input, negate,
                     b => b.Ruleset.OnlineID == gamemodeId,
@@ -301,10 +301,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate OnlineStatus = new(
             "status",
-            "Beatmap status (online status)",
-            "is",
-            "is NOT",
-            "Selects beatmaps with a specific osu! online status.\nNegating this filter would exclude maps with that status from export.",
+            LocalizationService.Instance["Filter.Status"],
+            LocalizationService.Instance["Filter.InputIs"],
+            LocalizationService.Instance["Filter.InputIsNot"],
+            LocalizationService.Instance["Filter.StatusDetail"],
             Input.Status,
             (input, negate) =>
             {
@@ -320,7 +320,7 @@ namespace BeatmapExporterCore.Filters
                     _ => null
                 };
                 if (statusId == null)
-                    throw new ArgumentException("Unknown beatmap status. Use graveyard, leaderboard, ranked, approved, qualified, or loved.");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorStatus"]);
 
                 return new(input, negate,
                     b => statusId.Contains(b.Status),
@@ -329,17 +329,16 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate PlayedSince = new(
             "played",
-            "Beatmap played (date)",
-            "in the last",
-            "not since",
-            "Selected beatmaps using the time that you last played them.\nFor example, input 12:00 to only export beatmaps that you played within the last 12 hours."
-            + "\nInput '30' to only export beatmaps you have played within the last 30 days, or negate this filter to export all beatmaps which you have not played in the last 30 days.\nUse the \"Beatmap played ever\" filter instead if you want to select all played/unplayed beatmaps.",
+            LocalizationService.Instance["Filter.Played"],
+            LocalizationService.Instance["Filter.InputLast"],
+            LocalizationService.Instance["Filter.InputNotSince"],
+            LocalizationService.Instance["Filter.PlayedDetail"],
             Input.RawText,
             (input, negate) =>
             {
                 // 12:00 
                 if (!TimeSpan.TryParse(input, out TimeSpan since))
-                    throw new ArgumentException("Invalid time interval");
+                    throw new ArgumentException(LocalizationService.Instance["Filter.ErrorTimeInterval"]);
 
                 return new(input, negate,
                     b =>
@@ -353,11 +352,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Played = new(
             "everplayed",
-            "Beatmap played ever",
+            LocalizationService.Instance["Filter.EverPlayed"],
             "",
-            "(negated)",
-            "Selects beatmaps that have been played at least once (yes), or only unplayed beatmaps (no)."
-            + "\nThe \"yes, with all diffs\" option will export ALL difficulties of a beatmap set if any difficulty has been played.",
+            LocalizationService.Instance["Filter.InputNegated"],
+            LocalizationService.Instance["Filter.EverPlayedDetail"],
             Input.Played,
             (input, negate) =>
             {
@@ -382,7 +380,7 @@ namespace BeatmapExporterCore.Filters
                         _ => null
                     };
                     if (played == null)
-                        throw new ArgumentException("Invalid beatmap played selection. Use \"yes\" for played beatmaps, or \"no\" for unplayed beatmaps.");
+                        throw new ArgumentException(LocalizationService.Instance["Filter.ErrorPlayed"]);
 
                     return new(input, negate,
                         b => (b.LastPlayed != null) == played,
@@ -392,10 +390,10 @@ namespace BeatmapExporterCore.Filters
 
         public static FilterTemplate Collections = new(
             "collection",
-            "Collection",
+            LocalizationService.Instance["Filter.Collection"],
             "",
-            ", NOT in",
-            "Selects beatmaps contained within a specific collection.",
+            LocalizationService.Instance["Filter.InputNotIn"],
+            LocalizationService.Instance["Filter.CollectionDetail"],
             Input.Collection,
             (input, negate) =>
             {

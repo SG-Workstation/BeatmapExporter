@@ -1,6 +1,6 @@
 # BeatmapExporter (for osu! Lazer)
 
-### Support the Developer0
+### Support the Developer
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E5AF13X)
 

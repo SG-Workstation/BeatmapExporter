@@ -7,7 +7,6 @@
              x:Class="BeatmapExporterGUI.Views.ExportView"
              x:DataType="vm:ExportViewModel">
 
-  <!-- ExportView follows through a single export operation -->
   <StackPanel Margin="12"
               Spacing="12">
 
@@ -23,7 +22,9 @@
     
     <TextBlock Text="{Binding Description}" />
 
-    <Button Command="{Binding ExportCancelCommand}">Stop Export</Button>
+    <Button Command="{Binding ExportCancelCommand}">
+      <TextBlock Text="{Binding Loc[Export.Stop]}" />
+    </Button>
 
     <ScrollViewer Name="ExportViewer"
                   VerticalScrollBarVisibility="Visible">

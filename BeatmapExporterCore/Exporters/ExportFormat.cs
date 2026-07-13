@@ -1,4 +1,6 @@
-﻿namespace BeatmapExporterCore.Exporters
+﻿using BeatmapExporterCore.Localization;
+
+namespace BeatmapExporterCore.Exporters
 {
     /// <summary>
     /// All available modes of exporting.
@@ -12,13 +14,13 @@
         /// </summary>
         public static string UnitName(this ExportFormat format) => format switch
         {
-            ExportFormat.Beatmap => "osu! beatmaps (.osz)",
-            ExportFormat.Audio => "audio (original/.mp3)",
-            ExportFormat.Background => "beatmap backgrounds",
-            ExportFormat.Replay => "score replays (.osr)",
-            ExportFormat.Skins => "osu! skins (.osk)",
-            ExportFormat.Folder => "osu!stable \"Songs\" folder",
-            ExportFormat.CollectionDb => "osu!stable \"collection.db\"",
+            ExportFormat.Beatmap => LocalizationService.Instance["ExportFormat.Beatmap"],
+            ExportFormat.Audio => LocalizationService.Instance["ExportFormat.Audio"],
+            ExportFormat.Background => LocalizationService.Instance["ExportFormat.Background"],
+            ExportFormat.Replay => LocalizationService.Instance["ExportFormat.Replay"],
+            ExportFormat.Skins => LocalizationService.Instance["ExportFormat.Skins"],
+            ExportFormat.Folder => LocalizationService.Instance["ExportFormat.Folder"],
+            ExportFormat.CollectionDb => LocalizationService.Instance["ExportFormat.CollectionDb"],
             _ => throw new NotImplementedException()
         };
 
@@ -27,13 +29,13 @@
         /// </summary>
         public static string Descriptor(this ExportFormat format) => format switch
         {
-            ExportFormat.Beatmap => "Beatmaps will be exported in osu! archive format (.osz).",
-            ExportFormat.Audio => "Beatmap audio files will be renamed, tagged and exported (original or .mp3 format).",
-            ExportFormat.Background => "Only beatmap background images will be exported (original format).",
-            ExportFormat.Replay => "Player score replays will be exported (.osr).",
-            ExportFormat.Skins => "ALL skins will be exported (.osk). Filters will not be checked.",
-            ExportFormat.Folder => "Beatmaps will be exported as an unarchived \"Songs\" folder ready for use with osu! stable.",
-            ExportFormat.CollectionDb => "Collections will be exported as the collection.db file used by osu! stable. Beatmap filters will still be applied.",
+            ExportFormat.Beatmap => LocalizationService.Instance["ExportFormat.BeatmapDesc"],
+            ExportFormat.Audio => LocalizationService.Instance["ExportFormat.AudioDesc"],
+            ExportFormat.Background => LocalizationService.Instance["ExportFormat.BackgroundDesc"],
+            ExportFormat.Replay => LocalizationService.Instance["ExportFormat.ReplayDesc"],
+            ExportFormat.Skins => LocalizationService.Instance["ExportFormat.SkinsDesc"],
+            ExportFormat.Folder => LocalizationService.Instance["ExportFormat.FolderDesc"],
+            ExportFormat.CollectionDb => LocalizationService.Instance["ExportFormat.CollectionDbDesc"],
             _ => throw new NotImplementedException() 
         };
 

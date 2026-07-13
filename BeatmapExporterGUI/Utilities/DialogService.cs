@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using BeatmapExporterCore.Localization;
 using BeatmapExporterCore.Exporters.Lazer.LazerDB;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace BeatmapExporterGUI.Utilities
         {
             this.mainWindow = mainWindow;
 
-            realmFilter = new("osu!lazer Realm")
+            realmFilter = new(LocalizationService.Instance["App.DialogDbFilter"])
             {
                 Patterns = new[] { "client.realm" },
                 MimeTypes = new[] { "application/octet-stream" }
@@ -33,7 +34,7 @@ namespace BeatmapExporterGUI.Utilities
             var start = await storage.TryGetFolderFromPathAsync(LazerDatabase.DefaultInstallDirectory());
             var options = new FilePickerOpenOptions()
             {
-                Title = "Select osu! database",
+                Title = LocalizationService.Instance["App.DialogSelectDb"],
                 AllowMultiple = false,
                 FileTypeFilter = new[] { realmFilter },
                 SuggestedStartLocation = start
@@ -50,7 +51,7 @@ namespace BeatmapExporterGUI.Utilities
         {
             var storage = mainWindow.StorageProvider;
             var options = new FolderPickerOpenOptions();
-            options.Title = "Select export target";
+            options.Title = LocalizationService.Instance["App.DialogSelectExport"];
             if (current != null)
                 options.SuggestedStartLocation = await storage.TryGetFolderFromPathAsync(current);
 

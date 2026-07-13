@@ -1,6 +1,7 @@
 ﻿using BeatmapExporterCore.Exporters;
 using BeatmapExporterCore.Exporters.Lazer;
 using BeatmapExporterCore.Filters;
+using BeatmapExporterCore.Localization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -62,7 +63,9 @@ namespace BeatmapExporterGUI.ViewModels.Settings
         /// <summary>
         /// String describing the currently selected beatmap set and diff counts versus the total counts, on two lines.
         /// </summary>
-        public string SelectionSummary => $"Beatmap sets selected: {Lazer.SelectedBeatmapSetCount}/{Lazer.TotalBeatmapSetCount}\n\nBeatmap diffs selected: {Lazer.SelectedBeatmapCount}/{Lazer.TotalBeatmapCount}";
+        public string SelectionSummary => LocalizationService.Instance.Format("Config.SelectionSummary",
+            Lazer.SelectedBeatmapSetCount, Lazer.TotalBeatmapSetCount,
+            Lazer.SelectedBeatmapCount, Lazer.TotalBeatmapCount);
 
         /// <summary>
         /// The currently selected beatmap filter, indexed 1:1 to <see cref="ExporterConfiguration.Filters" /> for this exporter
@@ -164,6 +167,7 @@ namespace BeatmapExporterGUI.ViewModels.Settings
                 Config.ExportFormat = (ExportFormat)value;
                 OnPropertyChanged(nameof(ModeDescriptor));
                 OnPropertyChanged(nameof(ExportUnit));
+                OnPropertyChanged(nameof(ExportUnitInfo));
                 OnPropertyChanged(nameof(ExportPath));
                 OnPropertyChanged(nameof(CompressionAvailable));
                 OnPropertyChanged(nameof(IsAudioExport));
@@ -175,7 +179,8 @@ namespace BeatmapExporterGUI.ViewModels.Settings
         /// <summary>
         /// List of all supported export formats in user friendly form
         /// </summary>
-        public IEnumerable<string> ExportModes { get; }
+        [ObservableProperty]
+        private IEnumerable<string> _ExportModes = [];
 
         /// <summary>
         /// Descriptor string for the currently selected export format 
@@ -226,7 +231,9 @@ namespace BeatmapExporterGUI.ViewModels.Settings
         /// <summary>
         /// Description of the current <see cref="CompressionEnabled" /> setting, suitable for user display.
         /// </summary>
-        public string CompressionDescriptor => CompressionEnabled ? "(slow export, smaller file sizes)" : "(fast export, no compression)";
+        public string CompressionDescriptor => CompressionEnabled
+            ? LocalizationService.Instance["Config.CompressionSlow"]
+            : LocalizationService.Instance["Config.CompressionFast"];
         
         /// <summary>
         /// If the export mode is currently set to export audio files.
@@ -273,7 +280,9 @@ namespace BeatmapExporterGUI.ViewModels.Settings
         /// <summary>
         /// Description of the current <see cref="MergeCollectionsEnabled" /> setting, suitable for user display.
         /// </summary>
-        public string MergeCollectionsDescriptor => MergeCollectionsEnabled ? "Will merge collections into existing collection.db at export location, if it is found.\nPlace collection.db in export directory before export if merge is desired." : "Will not merge collection, will instead fully overwrite any collection.db at export location.";
+        public string MergeCollectionsDescriptor => MergeCollectionsEnabled
+            ? LocalizationService.Instance["Config.MergeDescriptor"]
+            : LocalizationService.Instance["Config.MergeCollectionsDisabled"];
 
         /// <summary>
         /// If additional options for collection.db export should be displayed
@@ -296,12 +305,65 @@ namespace BeatmapExporterGUI.ViewModels.Settings
         /// <summary>
         /// Description of the current <see cref="MergeCaseInsensitive" /> setting, suitable for user display.
         /// </summary>
-        public string MergeCaseDescriptor => MergeCaseInsensitive ? "Collections with the same name with different capitalization will be merged." : "Collections will not be merged, all collections are preserved.";
+        public string MergeCaseDescriptor => MergeCaseInsensitive
+            ? LocalizationService.Instance["Config.MergeCaseDescriptor"]
+            : LocalizationService.Instance["Config.MergeCaseDisabled"];
 
         /// <summary>
         /// String containing the current type of file that will be exported
         /// </summary>
         public string ExportUnit => Config.ExportFormat.UnitName();
+
+        #region Language Selection
+        /// <summary>
+        /// All available locale options for the user.
+        /// </summary>
+        public IReadOnlyList<LocaleInfo> AvailableLanguages => LocalizationService.Instance.AvailableLocales;
+
+        /// <summary>
+        /// Index of the currently selected language.
+        /// </summary>
+        public int SelectedLanguageIndex
+        {
+            get
+            {
+                var current = LocalizationService.Instance.CurrentLocale;
+                for (int i = 0; i < AvailableLanguages.Count; i++)
+                {
+                    if (AvailableLanguages[i].Equals(current))
+                        return i;
+                }
+                return 0;
+            }
+            set
+            {
+                if (value >= 0 && value < AvailableLanguages.Count)
+                {
+                    var locale = AvailableLanguages[value];
+                    LocalizationService.Instance.CurrentLocale = locale;
+                    Exporter.Configuration.ClientSettings.SaveLanguage(locale.Culture);
+                    RefreshLocalizedContent();
+                }
+            }
+        }
+
+        private void RefreshLocalizedContent()
+        {
+            ExportModes = ExportFormats.All().Select(format => format.UnitName()).ToList();
+            OnPropertyChanged(nameof(SelectedExportIndex));
+            OnPropertyChanged(nameof(ModeDescriptor));
+            OnPropertyChanged(nameof(ExportUnit));
+            OnPropertyChanged(nameof(ExportUnitInfo));
+            OnPropertyChanged(nameof(SelectionSummary));
+            OnPropertyChanged(nameof(CompressionDescriptor));
+            OnPropertyChanged(nameof(AudioExportDescriptor));
+            OnPropertyChanged(nameof(MergeCollectionsDescriptor));
+            OnPropertyChanged(nameof(MergeCaseDescriptor));
+            OnPropertyChanged(nameof(SelectedLanguageIndex));
+        }
+        #endregion
+
+        public string ExportUnitInfo => LocalizationService.Instance.Format("Config.ExportSelection", ExportUnit);
 
         /// <summary>
         /// Reference to the Export Beatmaps command functionality for this page to allow an alternate method to begin exporting.

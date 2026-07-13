@@ -12,37 +12,47 @@
     <StackPanel Orientation="Horizontal"
                 Spacing="6">
       
-      <TextBlock VerticalAlignment="Center">View/Export:</TextBlock>
+      <TextBlock VerticalAlignment="Center"
+                 Text="{Binding Loc[Explorer.ViewExport]}" />
       <ComboBox ItemsSource="{Binding DisplayOptionNames}"
                 SelectedIndex="{Binding SelectedDisplayOption}" />
 
-      <Button Command="{Binding ExportSelectedDifficultyCommand}">Export Selected Difficulty</Button>
+      <Button Command="{Binding ExportSelectedDifficultyCommand}">
+        <TextBlock Text="{Binding Loc[Explorer.ExportDiff]}" />
+      </Button>
 
-      <Button Command="{Binding ExportSelectedFileCommand}">Export Selected File</Button>
+      <Button Command="{Binding ExportSelectedFileCommand}">
+        <TextBlock Text="{Binding Loc[Explorer.ExportFile]}" />
+      </Button>
 
-      <Button Command="{Binding ExportSelectedReplayCommand}">Export Selected Replay</Button>
+      <Button Command="{Binding ExportSelectedReplayCommand}">
+        <TextBlock Text="{Binding Loc[Explorer.ExportReplay]}" />
+      </Button>
       
     </StackPanel>
 
-    <TextBlock Text="{Binding SetName, StringFormat=Selected beatmap set: {0}}"
+    <TextBlock Text="{Binding SetNameInfo}"
                FontSize="18"
                TextWrapping="Wrap" />
 
-    <TextBlock FontSize="18">Beatmap Difficulties</TextBlock>
+    <TextBlock FontSize="18"
+               Text="{Binding Loc[Explorer.Difficulties]}" />
     
     <ListBox ItemsSource="{Binding DiffNames}"
              SelectedIndex="{Binding SelectedDiffIndex}"
              Name="DiffList"
              Background="Transparent" />
 
-    <TextBlock FontSize="18">All Beatmap Files</TextBlock>
+    <TextBlock FontSize="18"
+               Text="{Binding Loc[Explorer.Files]}" />
     
     <ListBox ItemsSource="{Binding FileNames}" 
              SelectedIndex="{Binding SelectedFileIndex}"
              Name="FileList"
              Background="Transparent" />
 
-    <TextBlock FontSize="18">Player Score Replays</TextBlock>
+    <TextBlock FontSize="18"
+               Text="{Binding Loc[Explorer.Replays]}" />
     
     <ListBox ItemsSource="{Binding Replays}"
              SelectedIndex="{Binding SelectedReplayIndex}"
