@@ -25,13 +25,13 @@
 
   <PropertyGroup>
     <PackageId>BeatmapExporterGUI.Desktop</PackageId>
-    <Version>2.7.0</Version>
-    <FileVersion>2.7.0</FileVersion>
+    <Version>2.7.1</Version>
+    <FileVersion>2.7.1</FileVersion>
     <Authors>kabii</Authors>
-    <Title>BeatmapExporter</Title>
+    <Title>BeatmapExporter International</Title>
     <Description>Beatmap exporter utility for osu!lazer</Description>
     <Copyright>MIT 2022 kabii</Copyright>
-    <RepositoryUrl>https://github.com/kabiiQ/BeatmapExporter.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/SG-Workstation/BeatmapExporter.git</RepositoryUrl>
     <ApplicationIcon>bmex.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
