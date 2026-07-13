@@ -37,6 +37,10 @@ jobs:
 
       - run: dotnet publish ${{ matrix.project.path }} -c Release -o output/${{ matrix.project.name }}
 
+      - name: Strip debug symbols
+        run: Remove-Item -Force "output/${{ matrix.project.name }}/*.pdb" -ErrorAction SilentlyContinue
+        shell: pwsh
+
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.project.name }}-${{ runner.os }}
