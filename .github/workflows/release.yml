@@ -6,7 +6,19 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        project:
+          - name: CLI
+            path: BeatmapExporterCLI
+          - name: Desktop
+            path: BeatmapExporterGUI.Desktop
+        os:
+          - windows-latest
+          - ubuntu-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -14,19 +26,41 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - run: dotnet publish BeatmapExporterCLI -c Release
-      - run: dotnet publish BeatmapExporterGUI.Desktop -c Release
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev
 
-      - name: Package CLI
-        run: Compress-Archive -Path "BeatmapExporterCLI/bin/Release/net10.0/publish/*" -DestinationPath "BeatmapExporterCLI.zip"
+      - run: dotnet publish ${{ matrix.project.path }} -c Release
 
-      - name: Package Desktop
-        run: Compress-Archive -Path "BeatmapExporterGUI.Desktop/bin/Release/net10.0/publish/*" -DestinationPath "BeatmapExporterGUI.zip"
+      - name: Archive (Windows)
+        if: runner.os == 'Windows'
+        run: Compress-Archive -Path "${{ matrix.project.path }}/bin/Release/net10.0/publish/*" -DestinationPath "${{ matrix.project.name }}-${{ runner.os }}.zip"
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
+      - name: Archive (Unix)
+        if: runner.os != 'Windows'
+        run: tar -czf "${{ matrix.project.name }}-${{ runner.os }}.tar.gz" -C "${{ matrix.project.path }}/bin/Release/net10.0/publish" .
+
+      - uses: actions/upload-artifact@v4
         with:
-          files: |
-            BeatmapExporterCLI.zip
-            BeatmapExporterGUI.zip
+          name: ${{ matrix.project.name }}-${{ runner.os }}
+          path: ${{ matrix.project.name }}-${{ runner.os }}.*
+
+  release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - name: Collect artifacts
+        run: |
+          mkdir release
+          find . -name "*.zip" -o -name "*.tar.gz" | while read f; do
+            cp "$f" release/
+          done
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
           generate_release_notes: true

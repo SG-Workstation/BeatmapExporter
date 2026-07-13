@@ -8,7 +8,19 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        project:
+          - name: CLI
+            path: BeatmapExporterCLI
+          - name: Desktop
+            path: BeatmapExporterGUI.Desktop
+        os:
+          - windows-latest
+          - ubuntu-latest
+          - macos-latest
+
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -16,17 +28,15 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - run: dotnet publish BeatmapExporterCLI -c Release
-      - run: dotnet publish BeatmapExporterGUI.Desktop -c Release
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev
 
-      - name: Upload CLI artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: BeatmapExporterCLI
-          path: BeatmapExporterCLI/bin/Release/net10.0/publish/
+      - run: dotnet publish ${{ matrix.project.path }} -c Release
 
-      - name: Upload Desktop artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: BeatmapExporterGUI
-          path: BeatmapExporterGUI.Desktop/bin/Release/net10.0/publish/
+          name: ${{ matrix.project.name }}-${{ runner.os }}
+          path: ${{ matrix.project.path }}/bin/Release/net10.0/publish/
