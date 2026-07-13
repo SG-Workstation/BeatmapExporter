@@ -33,15 +33,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgl1-mesa-dev libx11-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev
 
-      - run: dotnet publish ${{ matrix.project.path }} -c Release
+      - run: dotnet publish ${{ matrix.project.path }} -c Release -o output/${{ matrix.project.name }}
 
       - name: Archive (Windows)
         if: runner.os == 'Windows'
-        run: Compress-Archive -Path "${{ matrix.project.path }}/bin/Release/net10.0/publish/*" -DestinationPath "${{ matrix.project.name }}-${{ runner.os }}.zip"
+        run: Compress-Archive -Path "output/${{ matrix.project.name }}/*" -DestinationPath "${{ matrix.project.name }}-${{ runner.os }}.zip"
 
       - name: Archive (Unix)
         if: runner.os != 'Windows'
-        run: tar -czf "${{ matrix.project.name }}-${{ runner.os }}.tar.gz" -C "${{ matrix.project.path }}/bin/Release/net10.0/publish" .
+        run: tar -czf "${{ matrix.project.name }}-${{ runner.os }}.tar.gz" -C "output/${{ matrix.project.name }}" .
 
       - uses: actions/upload-artifact@v4
         with:
